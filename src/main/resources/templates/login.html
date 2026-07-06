@@ -52,7 +52,13 @@
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: formData.toString()
         }).then(function(res) { return res.json(); }).then(function(data) {
-            if (data.code === 200) { window.location.href = '/'; }
+            if (data.code === 200) {
+                if (data.data.role === 'ADMIN') {
+                    window.location.href = '/admin';
+                } else {
+                    window.location.href = '/';
+                }
+            }
             else { var el = document.getElementById('loginError'); el.textContent = data.message; el.classList.remove('d-none'); }
         }).catch(function() { var el = document.getElementById('loginError'); el.textContent = '网络错误，请重试'; el.classList.remove('d-none'); });
     });

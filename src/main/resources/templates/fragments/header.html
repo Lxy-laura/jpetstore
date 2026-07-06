@@ -33,13 +33,23 @@
                     </ul>
                 </li>
                 <li class="nav-item"><a class="nav-link" th:href="@{/cart}"><i class="bi bi-cart3 me-1"></i>购物车</a></li>
+                <li class="nav-item" th:if="${session.user != null && session.user.role == 'ADMIN'}">
+                    <a class="nav-link" th:href="@{/admin}"><i class="bi bi-layout-sidebar-inset me-1"></i>后台管理</a>
+                </li>
                 <li class="nav-item dropdown" th:if="${session.user != null}">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                         <i class="bi bi-person-circle me-1"></i><span th:text="${session.user.firstname}">用户</span>
+                        <span th:if="${session.user.role == 'ADMIN'}" class="badge bg-danger ms-1">管理员</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" th:href="@{/profile}"><i class="bi bi-person me-2"></i>个人中心</a></li>
                         <li><a class="dropdown-item" th:href="@{/orders}"><i class="bi bi-receipt me-2"></i>我的订单</a></li>
+                        <li th:if="${session.user.role == 'ADMIN'}">
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li th:if="${session.user.role == 'ADMIN'}">
+                            <a class="dropdown-item" th:href="@{/admin}"><i class="bi bi-layout-sidebar-inset me-2"></i>后台管理</a>
+                        </li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <form th:action="@{/api/account/logout}" method="post" class="d-inline">

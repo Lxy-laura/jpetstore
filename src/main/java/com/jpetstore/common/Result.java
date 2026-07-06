@@ -54,4 +54,8 @@ public class Result<T> implements Serializable {
     public static <T> Result<T> notFound(String message) {
         return new Result<>(404, message, null);
     }
+
+    public static <T> Result<T> forbidden(String message) {
+        return new Result<>(403, message, null);
+    }
 }

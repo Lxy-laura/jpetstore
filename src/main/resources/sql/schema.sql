@@ -40,6 +40,7 @@ CREATE TABLE account (
                          zip       VARCHAR(20) NOT NULL,
                          country   VARCHAR(20) NOT NULL,
                          phone     VARCHAR(80) NOT NULL,
+                         role      VARCHAR(20) NULL DEFAULT 'USER',
                          PRIMARY KEY (userid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -246,17 +247,20 @@ INSERT INTO item (itemid, productid, listprice, unitcost, supplier, status, attr
 -- 插入用户登录信息
 INSERT INTO signon (username, password) VALUES
                                             ('j2ee', 'j2ee'),
-                                            ('ACID', 'ACID');
+                                            ('ACID', 'ACID'),
+                                            ('admin', 'admin');
 
 -- 插入用户账户
-INSERT INTO account (userid, email, firstname, lastname, status, addr1, addr2, city, state, zip, country, phone) VALUES
-                                                                                                                     ('j2ee', 'j2ee@jpetstore.com', 'John', 'Doe', 'OK', '901 San Antonio Road', 'MS 100', 'Palo Alto', 'CA', '94303', 'US', '555-555-5555'),
-                                                                                                                     ('ACID', 'acid@jpetstore.com', 'Jane', 'Smith', 'OK', '100 Main Street', NULL, 'New York', 'NY', '10001', 'US', '555-123-4567');
+INSERT INTO account (userid, email, firstname, lastname, status, addr1, addr2, city, state, zip, country, phone, role) VALUES
+                                                                                                                     ('j2ee', 'j2ee@jpetstore.com', 'John', 'Doe', 'OK', '901 San Antonio Road', 'MS 100', 'Palo Alto', 'CA', '94303', 'US', '555-555-5555', 'USER'),
+                                                                                                                     ('ACID', 'acid@jpetstore.com', 'Jane', 'Smith', 'OK', '100 Main Street', NULL, 'New York', 'NY', '10001', 'US', '555-123-4567', 'USER'),
+                                                                                                                     ('admin', 'admin@jpetstore.com', 'Admin', 'Admin', 'OK', '1 Admin Street', NULL, 'Beijing', 'Beijing', '100000', 'CN', '010-12345678', 'ADMIN');
 
 -- 插入用户资料
 INSERT INTO profile (userid, langpref, favcategory, mylistopt, banneropt) VALUES
                                                                               ('j2ee', 'english', 'DOGS', 1, 1),
-                                                                              ('ACID', 'english', 'CATS', 1, 0);
+                                                                              ('ACID', 'english', 'CATS', 1, 0),
+                                                                              ('admin', 'english', 'DOGS', 1, 1);
 
 -- ============================================
 -- 4. 验证数据

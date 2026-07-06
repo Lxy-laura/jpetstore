@@ -61,6 +61,7 @@
             userid: formData.get('userid'), email: formData.get('email'), firstname: formData.get('firstname'),
             lastname: formData.get('lastname'), addr1: formData.get('addr1'), city: formData.get('city'),
             state: formData.get('state'), zip: formData.get('zip'), country: formData.get('country'), phone: formData.get('phone'),
+            role: 'USER',
             signOn: { username: formData.get('userid'), password: password },
             profile: { userid: formData.get('userid'), langpref: 'chinese', favcategory: 'DOGS' }
         };
