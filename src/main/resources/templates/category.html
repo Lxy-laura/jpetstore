@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${category != null ? category.name + ' - JPetStore' : '分类 - JPetStore'}">分类</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+<nav th:replace="~{fragments/header :: header}"></nav>
+<main>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/static}">首页</a></li>
+                <li class="breadcrumb-item active" th:text="${category != null ? category.name : '分类'}">分类</li>
+            </ol>
+        </nav>
+        <div class="mb-4">
+            <h2 class="page-title"><i class="bi bi-grid-3x3-gap-fill me-2"></i><span th:text="${category != null ? category.name : '商品列表'}">分类名称</span></h2>
+            <p class="text-muted" th:text="${category != null ? category.description : ''}">分类描述</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4 col-xl-3" th:each="product : ${products}">
+                <div class="card product-card">
+                    <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 200px;">
+                        <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                    </div>
+                    <div class="card-body">
+                        <span class="badge bg-primary badge-category mb-2" th:text="${product.category}">分类</span>
+                        <h5 class="card-title" th:text="${product.name}">商品名称</h5>
+                        <p class="card-text text-muted small" th:text="${#strings.abbreviate(product.description, 50)}">商品描述</p>
+                        <a th:href="@{'/product/' + ${product.productid}}" class="btn btn-gradient w-100"><i class="bi bi-eye me-1"></i>查看详情</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="empty-state" th:if="${#lists.isEmpty(products)}">
+            <i class="bi bi-inbox d-block"></i>
+            <h4>该分类下暂无商品</h4>
+            <p>去看看其他分类吧！</p>
+            <a th:href="@{/static}" class="btn btn-gradient"><i class="bi bi-arrow-left me-1"></i>返回首页</a>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/header :: footer}"></footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

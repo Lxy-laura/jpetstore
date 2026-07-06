@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jpetstore.mapper.CategoryMapper">
+
+    <resultMap id="categoryResultMap" type="com.jpetstore.domain.Category">
+        <id property="catid" column="catid"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+    </resultMap>
+
+    <select id="getAllCategories" resultMap="categoryResultMap">
+        SELECT catid, name, description FROM category
+    </select>
+
+    <select id="getCategoryById" resultMap="categoryResultMap">
+        SELECT catid, name, description FROM category WHERE catid = #{catid}
+    </select>
+
+    <insert id="insertCategory" parameterType="com.jpetstore.domain.Category">
+        INSERT INTO category (catid, name, description)
+        VALUES (#{catid}, #{name}, #{description})
+    </insert>
+
+    <update id="updateCategory" parameterType="com.jpetstore.domain.Category">
+        UPDATE category SET name = #{name}, description = #{description}
+        WHERE catid = #{catid}
+    </update>
+
+    <delete id="deleteCategory">
+        DELETE FROM category WHERE catid = #{catid}
+    </delete>
+
+</mapper>

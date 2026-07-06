@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jpetstore.mapper.OrderMapper">
+
+    <resultMap id="orderResultMap" type="com.jpetstore.domain.Order">
+        <id property="orderid" column="orderid"/>
+        <result property="userid" column="userid"/>
+        <result property="orderdate" column="orderdate"/>
+        <result property="shipaddr1" column="shipaddr1"/>
+        <result property="shipaddr2" column="shipaddr2"/>
+        <result property="shipcity" column="shipcity"/>
+        <result property="shipstate" column="shipstate"/>
+        <result property="shipzip" column="shipzip"/>
+        <result property="shipcountry" column="shipcountry"/>
+        <result property="billaddr1" column="billaddr1"/>
+        <result property="billaddr2" column="billaddr2"/>
+        <result property="billcity" column="billcity"/>
+        <result property="billstate" column="billstate"/>
+        <result property="billzip" column="billzip"/>
+        <result property="billcountry" column="billcountry"/>
+        <result property="courier" column="courier"/>
+        <result property="totalprice" column="totalprice"/>
+        <result property="billtofirstname" column="billtofirstname"/>
+        <result property="billtolastname" column="billtolastname"/>
+        <result property="shiptofirstname" column="shiptofirstname"/>
+        <result property="shiptolastname" column="shiptolastname"/>
+        <result property="creditcard" column="creditcard"/>
+        <result property="exprdate" column="exprdate"/>
+        <result property="cardtype" column="cardtype"/>
+        <result property="locale" column="locale"/>
+        <result property="status" column="status"/>
+        <collection property="orderItems" ofType="com.jpetstore.domain.OrderItem">
+            <id property="linenum" column="linenum"/>
+            <result property="orderid" column="orderid"/>
+            <result property="itemid" column="itemid"/>
+            <result property="quantity" column="quantity"/>
+            <result property="unitprice" column="unitprice"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="orderItemResultMap" type="com.jpetstore.domain.OrderItem">
+        <id property="linenum" column="linenum"/>
+        <result property="orderid" column="orderid"/>
+        <result property="itemid" column="itemid"/>
+        <result property="quantity" column="quantity"/>
+        <result property="unitprice" column="unitprice"/>
+    </resultMap>
+
+    <resultMap id="orderStatusResultMap" type="com.jpetstore.domain.OrderStatus">
+        <id property="orderid" column="orderid"/>
+        <id property="linenum" column="linenum"/>
+        <result property="timestamp" column="timestamp"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+    <insert id="insertOrder" parameterType="com.jpetstore.domain.Order" useGeneratedKeys="true" keyProperty="orderid">
+        INSERT INTO orders (userid, orderdate, shipaddr1, shipaddr2, shipcity, shipstate, shipzip, shipcountry,
+                            billaddr1, billaddr2, billcity, billstate, billzip, billcountry,
+                            courier, totalprice, billtofirstname, billtolastname,
+                            shiptofirstname, shiptolastname, creditcard, exprdate, cardtype, locale, status)
+        VALUES (#{userid}, #{orderdate}, #{shipaddr1}, #{shipaddr2}, #{shipcity}, #{shipstate}, #{shipzip}, #{shipcountry},
+                #{billaddr1}, #{billaddr2}, #{billcity}, #{billstate}, #{billzip}, #{billcountry},
+                #{courier}, #{totalprice}, #{billtofirstname}, #{billtolastname},
+                #{shiptofirstname}, #{shiptolastname}, #{creditcard}, #{exprdate}, #{cardtype}, #{locale}, #{status})
+    </insert>
+
+    <select id="getOrderById" resultMap="orderResultMap">
+        SELECT o.*, l.linenum, l.itemid, l.quantity, l.unitprice
+        FROM orders o
+                 LEFT JOIN lineitem l ON o.orderid = l.orderid
+        WHERE o.orderid = #{orderid}
+    </select>
+
+    <select id="getOrdersByUserId" resultMap="orderResultMap">
+        SELECT o.*, l.linenum, l.itemid, l.quantity, l.unitprice
+        FROM orders o
+                 LEFT JOIN lineitem l ON o.orderid = l.orderid
+        WHERE o.userid = #{userid}
+        ORDER BY o.orderdate DESC
+    </select>
+
+    <select id="getAllOrders" resultMap="orderResultMap">
+        SELECT o.*, l.linenum, l.itemid, l.quantity, l.unitprice
+        FROM orders o
+                 LEFT JOIN lineitem l ON o.orderid = l.orderid
+        ORDER BY o.orderdate DESC
+    </select>
+
+    <insert id="insertOrderItem" parameterType="com.jpetstore.domain.OrderItem">
+        INSERT INTO lineitem (orderid, linenum, itemid, quantity, unitprice)
+        VALUES (#{orderid}, #{linenum}, #{itemid}, #{quantity}, #{unitprice})
+    </insert>
+
+    <select id="getOrderItemsByOrderId" resultMap="orderItemResultMap">
+        SELECT orderid, linenum, itemid, quantity, unitprice
+        FROM lineitem WHERE orderid = #{orderid}
+    </select>
+
+    <insert id="insertOrderStatus" parameterType="com.jpetstore.domain.OrderStatus">
+        INSERT INTO orderstatus (orderid, linenum, timestamp, status)
+        VALUES (#{orderid}, #{linenum}, #{timestamp}, #{status})
+    </insert>
+
+    <select id="getOrderStatusByOrderId" resultMap="orderStatusResultMap">
+        SELECT orderid, linenum, timestamp, status
+        FROM orderstatus WHERE orderid = #{orderid}
+        ORDER BY timestamp DESC
+    </select>
+
+    <update id="updateOrderStatus">
+        UPDATE orders SET status = #{status} WHERE orderid = #{orderid}
+    </update>
+
+</mapper>

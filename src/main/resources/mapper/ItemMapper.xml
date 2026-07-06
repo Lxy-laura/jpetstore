@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jpetstore.mapper.ItemMapper">
+
+    <resultMap id="itemResultMap" type="com.jpetstore.domain.Item">
+        <id property="itemid" column="itemid"/>
+        <result property="productid" column="productid"/>
+        <result property="listprice" column="listprice"/>
+        <result property="unitcost" column="unitcost"/>
+        <result property="supplier" column="supplier"/>
+        <result property="status" column="status"/>
+        <result property="attr1" column="attr1"/>
+        <result property="attr2" column="attr2"/>
+        <result property="attr3" column="attr3"/>
+        <result property="attr4" column="attr4"/>
+        <result property="attr5" column="attr5"/>
+        <result property="qty" column="qty"/>
+    </resultMap>
+
+    <select id="getItemsByProductId" resultMap="itemResultMap">
+        SELECT itemid, productid, listprice, unitcost, supplier, status,
+               attr1, attr2, attr3, attr4, attr5, qty
+        FROM item WHERE productid = #{productid}
+    </select>
+
+    <select id="getItemById" resultMap="itemResultMap">
+        SELECT itemid, productid, listprice, unitcost, supplier, status,
+               attr1, attr2, attr3, attr4, attr5, qty
+        FROM item WHERE itemid = #{itemid}
+    </select>
+
+    <select id="getAllItems" resultMap="itemResultMap">
+        SELECT itemid, productid, listprice, unitcost, supplier, status,
+               attr1, attr2, attr3, attr4, attr5, qty FROM item
+    </select>
+
+    <update id="updateInventory">
+        UPDATE item SET qty = qty - #{quantity} WHERE itemid = #{itemid}
+    </update>
+
+    <insert id="insertItem" parameterType="com.jpetstore.domain.Item">
+        INSERT INTO item (itemid, productid, listprice, unitcost, supplier, status,
+                          attr1, attr2, attr3, attr4, attr5, qty)
+        VALUES (#{itemid}, #{productid}, #{listprice}, #{unitcost}, #{supplier}, #{status},
+                #{attr1}, #{attr2}, #{attr3}, #{attr4}, #{attr5}, #{qty})
+    </insert>
+
+    <update id="updateItem" parameterType="com.jpetstore.domain.Item">
+        UPDATE item SET listprice = #{listprice}, unitcost = #{unitcost},
+                        supplier = #{supplier}, status = #{status},
+                        attr1 = #{attr1}, attr2 = #{attr2}, attr3 = #{attr3},
+                        attr4 = #{attr4}, attr5 = #{attr5}, qty = #{qty}
+        WHERE itemid = #{itemid}
+    </update>
+
+    <delete id="deleteItem">
+        DELETE FROM item WHERE itemid = #{itemid}
+    </delete>
+
+</mapper>
