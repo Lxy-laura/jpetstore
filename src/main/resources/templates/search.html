@@ -19,7 +19,10 @@
         <div class="row g-4">
             <div class="col-md-6 col-lg-4 col-xl-3" th:each="product : ${products}">
                 <div class="card product-card">
-                    <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 200px;"><i class="bi bi-image text-muted" style="font-size: 3rem;"></i></div>
+                    <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 200px;">
+                        <img th:if="${product.image != null}" th:src="${product.image}" class="w-full h-full object-cover" alt="${product.name}">
+                        <i th:unless="${product.image != null}" class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                    </div>
                     <div class="card-body">
                         <span class="badge bg-primary badge-category mb-2" th:text="${product.category}">分类</span>
                         <h5 class="card-title" th:text="${product.name}">商品名称</h5>

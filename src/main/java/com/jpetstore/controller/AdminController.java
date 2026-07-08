@@ -5,9 +5,16 @@ import com.jpetstore.domain.*;
 import com.jpetstore.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * 管理员控制器
@@ -122,7 +129,42 @@ public class AdminController {
      * 创建产品
      */
     @PostMapping("/products")
-    public Result<String> createProduct(@Valid @RequestBody Product product) {
+    public Result<String> createProduct(
+            @RequestParam String productid,
+            @RequestParam String category,
+            @RequestParam String name,
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) MultipartFile image) {
+        
+        String imagePath = null;
+        if (image != null && !image.isEmpty()) {
+            try {
+                String originalFilename = image.getOriginalFilename();
+                String extension = originalFilename != null && originalFilename.contains(".") 
+                    ? originalFilename.substring(originalFilename.lastIndexOf(".")) 
+                    : ".jpg";
+                String newFilename = UUID.randomUUID().toString() + extension;
+                Path uploadPath = Paths.get("uploads");
+                
+                if (!Files.exists(uploadPath)) {
+                    Files.createDirectories(uploadPath);
+                }
+                
+                Path filePath = uploadPath.resolve(newFilename);
+                Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                imagePath = "/uploads/" + newFilename;
+            } catch (IOException e) {
+                return Result.error("图片上传失败: " + e.getMessage());
+            }
+        }
+        
+        Product product = new Product();
+        product.setProductid(productid);
+        product.setCategory(category);
+        product.setName(name);
+        product.setDescription(description);
+        product.setImage(imagePath);
+        
         int result = productService.insertProduct(product);
         if (result > 0) {
             return Result.success("创建成功", "创建成功");

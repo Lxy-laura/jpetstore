@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - JPetStore</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+<nav th:replace="~{fragments/header :: header}"></nav>
+<main>
+    <div class="container py-4">
+        <h2 class="page-title"><i class="bi bi-shield-check me-2"></i>管理后台</h2>
+        
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <div class="text-3xl mb-2"><i class="bi bi-grid-3x3-gap"></i></div>
+                        <div class="text-2xl font-bold" th:text="${categoryCount}">0</div>
+                        <div class="text-sm opacity-80">分类数量</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <div class="text-3xl mb-2"><i class="bi bi-box-seam"></i></div>
+                        <div class="text-2xl font-bold" th:text="${productCount}">0</div>
+                        <div class="text-sm opacity-80">产品数量</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center">
+                        <div class="text-3xl mb-2"><i class="bi bi-receipt"></i></div>
+                        <div class="text-2xl font-bold" th:text="${orderCount}">0</div>
+                        <div class="text-sm opacity-80">订单数量</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body text-center">
+                        <div class="text-3xl mb-2"><i class="bi bi-people"></i></div>
+                        <div class="text-2xl font-bold" th:text="${userCount}">0</div>
+                        <div class="text-sm opacity-80">用户数量</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="list-group">
+                    <button class="list-group-item list-group-item-action active" data-bs-toggle="collapse" data-bs-target="#productSection">
+                        <i class="bi bi-box-seam me-2"></i>产品管理
+                    </button>
+                    <button class="list-group-item list-group-item-action" data-bs-toggle="collapse" data-bs-target="#categorySection">
+                        <i class="bi bi-grid-3x3-gap me-2"></i>分类管理
+                    </button>
+                </div>
+            </div>
+            
+            <div class="col-md-9">
+                <div class="collapse show" id="productSection">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="bi bi-plus-circle me-2"></i>添加产品</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="addProductForm" enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label class="form-label">产品ID</label>
+                                    <input type="text" class="form-control" id="productid" name="productid" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">分类</label>
+                                    <select class="form-select" id="category" name="category" required>
+                                        <option value="FISH">鱼类 (FISH)</option>
+                                        <option value="DOGS">狗狗 (DOGS)</option>
+                                        <option value="CATS">猫咪 (CATS)</option>
+                                        <option value="REPTILES">爬行动物 (REPTILES)</option>
+                                        <option value="BIRDS">鸟类 (BIRDS)</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">名称</label>
+                                    <input type="text" class="form-control" id="name" name="name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">描述</label>
+                                    <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">产品图片</label>
+                                    <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                                    <div class="mt-2" id="imagePreview" style="display: none;">
+                                        <img id="previewImg" src="" class="img-fluid rounded" style="max-height: 200px;">
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary"><i class="bi bi-save me-2"></i>保存</button>
+                                <button type="button" class="btn btn-secondary" id="cancelBtn">取消</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapse" id="categorySection">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="bi bi-plus-circle me-2"></i>添加分类</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="addCategoryForm">
+                                <div class="mb-3">
+                                    <label class="form-label">分类ID</label>
+                                    <input type="text" class="form-control" id="catid" name="catid" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">名称</label>
+                                    <input type="text" class="form-control" id="catName" name="name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">描述</label>
+                                    <textarea class="form-control" id="catDescription" name="description" rows="3"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary"><i class="bi bi-save me-2"></i>保存</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/header :: footer}"></footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.getElementById('image').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            document.getElementById('previewImg').src = event.target.result;
+            document.getElementById('imagePreview').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    } else {
+        document.getElementById('imagePreview').style.display = 'none';
+    }
+});
+
+document.getElementById('addProductForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    try {
+        const response = await fetch('/api/admin/products', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.code === 200) {
+            alert('产品添加成功！');
+            this.reset();
+            document.getElementById('imagePreview').style.display = 'none';
+        } else {
+            alert('添加失败：' + result.message);
+        }
+    } catch (error) {
+        alert('添加失败：' + error.message);
+    }
+});
+
+document.getElementById('cancelBtn').addEventListener('click', function() {
+    document.getElementById('addProductForm').reset();
+    document.getElementById('imagePreview').style.display = 'none';
+});
+
+document.getElementById('addCategoryForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const data = {
+        catid: document.getElementById('catid').value,
+        name: document.getElementById('catName').value,
+        description: document.getElementById('catDescription').value
+    };
+    
+    try {
+        const response = await fetch('/api/admin/categories', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (result.code === 200) {
+            alert('分类添加成功！');
+            this.reset();
+        } else {
+            alert('添加失败：' + result.message);
+        }
+    } catch (error) {
+        alert('添加失败：' + error.message);
+    }
+});
+</script>
+</body>
+</html>

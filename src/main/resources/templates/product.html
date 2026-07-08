@@ -23,7 +23,8 @@
             <div class="row g-4">
                 <div class="col-md-5">
                     <div class="bg-light rounded-4 d-flex align-items-center justify-content-center" style="height: 400px;">
-                        <i class="bi bi-image text-muted" style="font-size: 5rem;"></i>
+                        <img th:if="${product.image != null}" th:src="${product.image}" class="w-full h-full object-contain rounded-4" alt="${product.name}">
+                        <i th:unless="${product.image != null}" class="bi bi-image text-muted" style="font-size: 5rem;"></i>
                     </div>
                 </div>
                 <div class="col-md-7">
