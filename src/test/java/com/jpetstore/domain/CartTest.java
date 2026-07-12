@@ -150,4 +150,168 @@ class CartTest {
         cartItem.incrementQuantity();
         assertEquals(2, cartItem.getQuantity());
     }
+
+    // ==================== 以下为补充的测试用例 ====================
+
+    // --- 边界值测试 ---
+
+    /**
+     * 设置数量为0 -> 商品应从购物车移除
+     */
+    @Test
+    void testSetQuantityToZeroRemovesItem() {
+        cart.addItem(item1);
+        cart.setQuantity("EST-1", 0);
+        assertEquals(0, cart.getNumberOfItems());
+        assertTrue(cart.isEmpty());
+    }
+
+    /**
+     * 设置数量为负数 -> 商品应从购物车移除（根据 Cart.setQuantity 实现）
+     */
+    @Test
+    void testSetQuantityToNegativeRemovesItem() {
+        cart.addItem(item1);
+        cart.setQuantity("EST-1", -5);
+        assertEquals(0, cart.getNumberOfItems());
+    }
+
+    /**
+     * 对不存在的商品设置数量 -> 不影响购物车
+     */
+    @Test
+    void testSetQuantityForNonExistentItem() {
+        cart.addItem(item1);
+        cart.setQuantity("NOT-EXIST", 5);
+        assertEquals(1, cart.getNumberOfItems());
+    }
+
+    /**
+     * 对不存在的商品增量 -> 不影响购物车
+     */
+    @Test
+    void testIncrementNonExistentItem() {
+        cart.addItem(item1);
+        cart.incrementQuantity("NOT-EXIST");
+        assertEquals(1, cart.getNumberOfItems());
+    }
+
+    // --- 金额计算测试 ---
+
+    /**
+     * 空购物车总价应为0
+     */
+    @Test
+    void testGetSubTotalEmptyCart() {
+        assertEquals(BigDecimal.ZERO, cart.getSubTotal());
+    }
+
+    /**
+     * 多个商品多数量总价计算
+     */
+    @Test
+    void testGetSubTotalMultipleItemsMultipleQuantity() {
+        cart.addItem(item1);  // 16.50 * 1
+        cart.addItem(item2);  // 16.50 * 1
+        cart.incrementQuantity("EST-1");  // 16.50 * 2
+
+        // 16.50 * 2 + 16.50 * 1 = 49.50
+        assertEquals(new BigDecimal("49.50"), cart.getSubTotal());
+    }
+
+    /**
+     * 移除商品后总价应重新计算
+     */
+    @Test
+    void testGetSubTotalAfterRemove() {
+        cart.addItem(item1);  // 16.50
+        cart.addItem(item2);  // 16.50
+        // 总价 = 33.00
+        assertEquals(new BigDecimal("33.00"), cart.getSubTotal());
+
+        cart.removeItemById("EST-1");
+        // 总价 = 16.50
+        assertEquals(new BigDecimal("16.50"), cart.getSubTotal());
+    }
+
+    /**
+     * 清空后总价应为0
+     */
+    @Test
+    void testGetSubTotalAfterClear() {
+        cart.addItem(item1);
+        cart.addItem(item2);
+        cart.clear();
+        assertEquals(BigDecimal.ZERO, cart.getSubTotal());
+    }
+
+    // --- CartItem 测试 ---
+
+    /**
+     * CartItem 设置指定数量后计算总价
+     */
+    @Test
+    void testCartItemSetQuantityAndTotal() {
+        CartItem cartItem = new CartItem(item1);
+        cartItem.setQuantity(10);
+        // 16.50 * 10 = 165.00
+        assertEquals(new BigDecimal("165.00"), cartItem.getTotalPrice());
+    }
+
+    /**
+     * CartItem 多次增量
+     */
+    @Test
+    void testCartItemMultipleIncrements() {
+        CartItem cartItem = new CartItem(item1);
+        cartItem.incrementQuantity();
+        cartItem.incrementQuantity();
+        cartItem.incrementQuantity();
+        assertEquals(4, cartItem.getQuantity());
+    }
+
+    /**
+     * item 为 null 时 totalPrice 应为 0
+     */
+    @Test
+    void testCartItemTotalPriceWithNullItem() {
+        CartItem cartItem = new CartItem(item1);
+        cartItem.setItem(null);
+        assertEquals(BigDecimal.ZERO, cartItem.getTotalPrice());
+    }
+
+    /**
+     * item 的 listprice 为 null 时 totalPrice 应为 0
+     */
+    @Test
+    void testCartItemTotalPriceWithNullPrice() {
+        Item nullPriceItem = new Item();
+        nullPriceItem.setItemid("EST-NULL");
+        nullPriceItem.setListprice(null);
+        CartItem cartItem = new CartItem(nullPriceItem);
+        assertEquals(BigDecimal.ZERO, cartItem.getTotalPrice());
+    }
+
+    // --- 购物车状态测试 ---
+
+    /**
+     * 添加后移除 -> 购物车应为空
+     */
+    @Test
+    void testAddThenRemoveResultsEmpty() {
+        cart.addItem(item1);
+        assertFalse(cart.isEmpty());
+        cart.removeItemById("EST-1");
+        assertTrue(cart.isEmpty());
+    }
+
+    /**
+     * 清空后再清空 -> 不报错
+     */
+    @Test
+    void testClearTwice() {
+        cart.clear();
+        cart.clear();
+        assertTrue(cart.isEmpty());
+    }
 }
