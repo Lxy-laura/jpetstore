@@ -36,7 +36,7 @@ public class CategoryController {
         if (result > 0) {
             return Result.success("创建成功", "创建成功");
         }
-        return Result.error("创建失败");
+        return Result.error(503, "创建失败");
     }
 
     @PutMapping("/{catid}")
@@ -46,7 +46,7 @@ public class CategoryController {
         if (result > 0) {
             return Result.success("更新成功", "更新成功");
         }
-        return Result.error("更新失败");
+        return Result.error(503, "更新失败");
     }
 
     @DeleteMapping("/{catid}")
@@ -55,6 +55,6 @@ public class CategoryController {
         if (result > 0) {
             return Result.success("删除成功", "删除成功");
         }
-        return Result.error("删除失败");
+        return Result.error(503, "删除失败");
     }
 }

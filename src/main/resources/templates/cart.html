@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +13,7 @@
 <main>
     <div class="container py-4">
         <h2 class="page-title"><i class="bi bi-cart3 me-2"></i>我的购物车</h2>
-        <div th:if="${cart != null and !cart.empty}">
+        <div th:if="${cart != null and !#lists.isEmpty(cart.cartItems)}">
             <div class="row">
                 <div class="col-lg-8">
                     <div class="card border-0 shadow-sm rounded-4">
@@ -24,11 +24,11 @@
                                 <tr th:each="cartItem : ${cart.cartItems}">
                                     <td class="ps-4">
                                         <div class="d-flex align-items-center">
-                                            <div class="bg-light rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;"><i class="bi bi-image text-muted"></i></div>
+                                            <div class="bg-light rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;"><span style="font-size: 2rem;">🦴</span></div>
                                             <div><div class="fw-bold" th:text="${cartItem.item.itemid}">商品编号</div><small class="text-muted" th:text="${cartItem.item.productid}">产品编号</small></div>
                                         </div>
                                     </td>
-                                    <td><span class="fw-bold" th:text="'¥' + ${cartItem.item.listprice}">¥0.00</span></td>
+                                    <td><span class="fw-bold" th:text="${'¥' + cartItem.item.listprice}">¥0.00</span></td>
                                     <td>
                                         <div class="input-group input-group-sm" style="width: 120px;">
                                             <button class="btn btn-outline-secondary btn-decrease" th:data-itemid="${cartItem.item.itemid}" th:data-quantity="${cartItem.quantity - 1}"><i class="bi bi-dash"></i></button>
@@ -36,7 +36,7 @@
                                             <button class="btn btn-outline-secondary btn-increase" th:data-itemid="${cartItem.item.itemid}" th:data-quantity="${cartItem.quantity + 1}"><i class="bi bi-plus"></i></button>
                                         </div>
                                     </td>
-                                    <td><span class="fw-bold text-danger" th:text="'¥' + ${cartItem.totalPrice}">¥0.00</span></td>
+                                    <td><span class="fw-bold text-danger" th:text="${'¥' + cartItem.totalPrice}">¥0.00</span></td>
                                     <td class="pe-4">
                                         <form th:action="@{/api/cart/remove}" method="post" class="d-inline">
                                             <input type="hidden" name="itemId" th:value="${cartItem.item.itemid}">
@@ -53,9 +53,9 @@
                     <div class="card border-0 shadow-sm rounded-4">
                         <div class="card-body p-4">
                             <h5 class="fw-bold mb-4"><i class="bi bi-receipt me-2"></i>订单摘要</h5>
-                            <div class="d-flex justify-content-between mb-3"><span class="text-muted">商品数量</span><span class="fw-bold" th:text="${cart.numberOfItems} + ' 种'">0 种</span></div>
+                            <div class="d-flex justify-content-between mb-3"><span class="text-muted">商品数量</span><span class="fw-bold" th:text="${cart.numberOfItems + ' 种'}">0 种</span></div>
                             <hr>
-                            <div class="d-flex justify-content-between mb-4"><span class="fs-5 fw-bold">合计</span><span class="fs-4 fw-bold text-danger" th:text="'¥' + ${cart.subTotal}">¥0.00</span></div>
+                            <div class="d-flex justify-content-between mb-4"><span class="fs-5 fw-bold">合计</span><span class="fs-4 fw-bold text-danger" th:text="${'¥' + cart.subTotal}">¥0.00</span></div>
                             <a th:href="@{/checkout}" class="btn btn-gradient w-100 py-3 fs-5"><i class="bi bi-credit-card me-2"></i>去结算</a>
                             <form th:action="@{/api/cart/clear}" method="post" class="mt-2"><button type="submit" class="btn btn-outline-danger w-100"><i class="bi bi-trash me-2"></i>清空购物车</button></form>
                         </div>
@@ -63,7 +63,7 @@
                 </div>
             </div>
         </div>
-        <div class="empty-state" th:if="${cart == null or cart.empty}">
+        <div class="empty-state" th:if="${cart == null or #lists.isEmpty(cart.cartItems)}">
             <i class="bi bi-cart-x d-block"></i><h4>购物车是空的</h4><p>快去挑选心仪的商品吧！</p>
             <a th:href="@{/}" class="btn btn-gradient"><i class="bi bi-arrow-left me-1"></i>去购物</a>
         </div>

@@ -44,4 +44,15 @@ public class ProductService {
     public int deleteProduct(String productid) {
         return productMapper.deleteProduct(productid);
     }
+
+    /**
+     * 更新产品状态（上下架）
+     * @param productid 产品ID
+     * @param status 状态：ON_SALE-在售，OFF_SALE-下架
+     * @return 受影响的行数
+     */
+    @Transactional
+    public int updateProductStatus(String productid, String status) {
+        return productMapper.updateProductStatus(productid, status);
+    }
 }

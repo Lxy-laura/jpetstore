@@ -14,7 +14,7 @@
     <div class="container py-4">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a th:href="@{/static}">首页</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/}">首页</a></li>
                 <li class="breadcrumb-item active" th:text="${category != null ? category.name : '分类'}">分类</li>
             </ol>
         </nav>
@@ -26,7 +26,8 @@
             <div class="col-md-6 col-lg-4 col-xl-3" th:each="product : ${products}">
                 <div class="card product-card">
                     <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 200px;">
-                        <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                        <img th:if="${product.image != null}" th:src="${product.image}" class="w-full h-full object-cover" alt="${product.name}">
+                        <i th:unless="${product.image != null}" class="bi bi-image text-muted" style="font-size: 3rem;"></i>
                     </div>
                     <div class="card-body">
                         <span class="badge bg-primary badge-category mb-2" th:text="${product.category}">分类</span>
@@ -41,7 +42,7 @@
             <i class="bi bi-inbox d-block"></i>
             <h4>该分类下暂无商品</h4>
             <p>去看看其他分类吧！</p>
-            <a th:href="@{/static}" class="btn btn-gradient"><i class="bi bi-arrow-left me-1"></i>返回首页</a>
+            <a th:href="@{/}" class="btn btn-gradient"><i class="bi bi-arrow-left me-1"></i>返回首页</a>
         </div>
     </div>
 </main>

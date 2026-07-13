@@ -49,6 +49,11 @@
                                             <input type="hidden" name="itemId" th:value="${item.itemid}">
                                             <button type="submit" class="btn btn-sm btn-gradient"><i class="bi bi-cart-plus me-1"></i>加入购物车</button>
                                         </form>
+                                        <form th:action="@{/api/cart/add}" method="post" class="d-inline ms-1" th:if="${item.qty > 0}">
+                                            <input type="hidden" name="itemId" th:value="${item.itemid}">
+                                            <input type="hidden" name="redirect" value="cart">
+                                            <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-bag-check me-1"></i>立即购买</button>
+                                        </form>
                                         <button class="btn btn-sm btn-outline-secondary disabled" th:if="${item.qty <= 0}">缺货</button>
                                     </td>
                                 </tr>

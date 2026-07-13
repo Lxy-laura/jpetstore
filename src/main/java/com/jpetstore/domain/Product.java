@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 
 import jakarta.validation.constraints.NotBlank;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -28,6 +29,15 @@ public class Product implements Serializable {
 
     private String image;
 
+    private BigDecimal price;
+
     private Category categoryObj;
     private List<Item> items;
+
+    public void setStatus(String s) {
+    }
+
+    public String getStatus() {
+        return null;
+    }
 }

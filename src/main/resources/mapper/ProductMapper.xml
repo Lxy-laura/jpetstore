@@ -9,38 +9,50 @@
         <result property="name" column="name"/>
         <result property="description" column="description"/>
         <result property="image" column="image"/>
+        <result property="price" column="price"/>
+        <result property="status" column="status"/>
     </resultMap>
 
     <select id="getProductsByCategory" resultMap="productResultMap">
-        SELECT productid, category, name, description, image
-        FROM product WHERE category = #{category}
+        SELECT productid, category, name, description, image, price, status
+        FROM product WHERE category = #{category} AND status = 'ON_SALE'
     </select>
 
     <select id="searchProducts" resultMap="productResultMap">
-        SELECT productid, category, name, description, image
+        SELECT productid, category, name, description, image, price, status
         FROM product
-        WHERE name LIKE CONCAT('%', #{keyword}, '%')
-           OR description LIKE CONCAT('%', #{keyword}, '%')
+        WHERE (name LIKE CONCAT('%', #{keyword}, '%')
+            OR description LIKE CONCAT('%', #{keyword}, '%'))
+          AND status = 'ON_SALE'
     </select>
 
     <select id="getProductById" resultMap="productResultMap">
-        SELECT productid, category, name, description, image
+        SELECT productid, category, name, description, image, price, status
         FROM product WHERE productid = #{productid}
     </select>
 
     <select id="getAllProducts" resultMap="productResultMap">
-        SELECT productid, category, name, description, image FROM product
+        SELECT productid, category, name, description, image, price, status FROM product
     </select>
 
     <insert id="insertProduct" parameterType="com.jpetstore.domain.Product">
-        INSERT INTO product (productid, category, name, description, image)
-        VALUES (#{productid}, #{category}, #{name}, #{description}, #{image})
+        INSERT INTO product (productid, category, name, description, image, price, status)
+        VALUES (#{productid}, #{category}, #{name}, #{description}, #{image}, #{price}, #{status})
     </insert>
 
     <update id="updateProduct" parameterType="com.jpetstore.domain.Product">
-        UPDATE product SET name = #{name}, description = #{description},
-                           image = #{image}, category = #{category}
+        UPDATE product
+        SET name = #{name},
+            description = #{description},
+            image = #{image},
+            category = #{category},
+            price = #{price},
+            status = #{status}
         WHERE productid = #{productid}
+    </update>
+
+    <update id="updateProductStatus">
+        UPDATE product SET status = #{status} WHERE productid = #{productid}
     </update>
 
     <delete id="deleteProduct">

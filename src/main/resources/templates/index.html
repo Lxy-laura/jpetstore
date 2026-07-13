@@ -28,14 +28,15 @@
                     <a th:href="@{'/category/' + ${category.catid}}" class="text-decoration-none">
                         <div class="card category-card">
                             <div class="card-body">
-                                    <span class="category-icon" th:switch="${category.catid}">
-                                        <i class="bi bi-water" th:case="'FISH'"></i>
-                                        <i class="bi bi-heart-pulse-fill" th:case="'DOGS'"></i>
-                                        <i class="bi bi-emoji-smile-fill" th:case="'CATS'"></i>
-                                        <i class="bi bi-bug-fill" th:case="'REPTILES'"></i>
-                                        <i class="bi bi-feather" th:case="'BIRDS'"></i>
-                                        <i class="bi bi-box-seam" th:case="*"></i>
-                                    </span>
+                                <span class="category-icon" th:switch="${category.catid}">
+                                    <span th:case="'FISH'" style="font-size: 4rem;">🐟</span>
+                                    <span th:case="'DOGS'" style="font-size: 4rem;">🐕</span>
+                                    <span th:case="'CATS'" style="font-size: 4rem;">🐈</span>
+                                    <span th:case="'REPTILES'" style="font-size: 4rem;">🦎</span>
+                                    <span th:case="'BIRDS'" style="font-size: 4rem;">🐦</span>
+                                    <span th:case="'Pet snacks'" style="font-size: 4rem;">🍪</span>
+                                    <span th:case="*" style="font-size: 4rem;">📦</span>
+                                </span>
                                 <h5 class="card-title" th:text="${category.name}">分类名称</h5>
                                 <p class="card-text" th:text="${category.description}">分类描述</p>
                             </div>
@@ -50,7 +51,8 @@
                 <div class="col-md-6 col-lg-4 col-xl-3" th:each="product : ${products}">
                     <div class="card product-card">
                         <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 200px;">
-                            <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                            <img th:if="${product.image != null}" th:src="${product.image}" class="w-full h-full object-cover" alt="${product.name}">
+                            <i th:unless="${product.image != null}" class="bi bi-image text-muted" style="font-size: 3rem;"></i>
                         </div>
                         <div class="card-body">
                             <span class="badge bg-primary badge-category mb-2" th:text="${product.category}">分类</span>
