@@ -37,67 +37,83 @@ class ItemControllerTest {
     @BeforeEach
     void setUp() {
         testItem = new Item();
-        testItem.setItemid("I001");
-        testItem.setProductid("P001");
+        testItem.setItemid("EST-1");
+        testItem.setProductid("FI-SW-01");
         testItem.setListprice(new BigDecimal("16.50"));
         testItem.setUnitcost(new BigDecimal("10.00"));
         testItem.setSupplier(1);
         testItem.setStatus("P");
-        testItem.setAttr1("大尺寸");
-        testItem.setQty(1000);
+        testItem.setAttr1("Large");
+        testItem.setQty(10000);
     }
+
+    // ==================== 获取所有商品项 ====================
 
     @Test
     void testGetAllItems() throws Exception {
         when(itemService.getAllItems()).thenReturn(Arrays.asList(testItem));
+
         mockMvc.perform(get("/api/items"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data[0].itemid").value("I001"));
+                .andExpect(jsonPath("$.data[0].itemid").value("EST-1"));
     }
 
     @Test
     void testGetAllItemsEmpty() throws Exception {
         when(itemService.getAllItems()).thenReturn(Collections.emptyList());
+
         mockMvc.perform(get("/api/items"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").isEmpty());
     }
 
+    // ==================== 根据ID获取商品项 ====================
+
     @Test
     void testGetItemById() throws Exception {
-        when(itemService.getItemById("I001")).thenReturn(testItem);
-        mockMvc.perform(get("/api/items/I001"))
+        when(itemService.getItemById("EST-1")).thenReturn(testItem);
+
+        mockMvc.perform(get("/api/items/EST-1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
-                .andExpect(jsonPath("$.data.itemid").value("I001"))
+                .andExpect(jsonPath("$.data.itemid").value("EST-1"))
                 .andExpect(jsonPath("$.data.listprice").value(16.50))
-                .andExpect(jsonPath("$.data.attr1").value("大尺寸"));
+                .andExpect(jsonPath("$.data.attr1").value("Large"));
     }
 
     @Test
     void testGetItemByIdNotFound() throws Exception {
-        when(itemService.getItemById("I999")).thenReturn(null);
-        mockMvc.perform(get("/api/items/I999"))
+        when(itemService.getItemById("EST-999")).thenReturn(null);
+
+        mockMvc.perform(get("/api/items/EST-999"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(404))
                 .andExpect(jsonPath("$.message").value("商品项不存在"));
     }
 
+    /**
+     * 参数化测试：用不同的商品项ID测试
+     */
     @ParameterizedTest
-    @ValueSource(strings = {"I001", "I002", "I003"})
+    @ValueSource(strings = {"EST-1", "EST-2", "EST-3"})
     void testGetItemByDifferentIds(String itemid) throws Exception {
         when(itemService.getItemById(itemid)).thenReturn(testItem);
+
         mockMvc.perform(get("/api/items/" + itemid))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200));
     }
 
+    // ==================== 创建商品项 ====================
+
     @Test
     void testCreateItem() throws Exception {
         when(itemService.insertItem(any(Item.class))).thenReturn(1);
-        String json = "{\"itemid\":\"I999\",\"productid\":\"P001\",\"listprice\":20.00,\"unitcost\":12.00,\"qty\":100}";
+
+        String json = "{\"itemid\":\"EST-99\",\"productid\":\"FI-SW-01\",\"listprice\":20.00,\"unitcost\":12.00,\"qty\":100}";
+
         mockMvc.perform(post("/api/items")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -109,7 +125,9 @@ class ItemControllerTest {
     @Test
     void testCreateItemFailure() throws Exception {
         when(itemService.insertItem(any(Item.class))).thenReturn(0);
-        String json = "{\"itemid\":\"I999\",\"productid\":\"P001\",\"listprice\":20.00}";
+
+        String json = "{\"itemid\":\"EST-99\",\"productid\":\"FI-SW-01\",\"listprice\":20.00}";
+
         mockMvc.perform(post("/api/items")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -120,34 +138,45 @@ class ItemControllerTest {
     @Test
     void testCreateItemWithBlankItemId() throws Exception {
         String json = "{\"itemid\":\"\",\"productid\":\"P001\"}";
+
         mockMvc.perform(post("/api/items")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(400));
     }
 
     @Test
     void testCreateItemWithBlankProductId() throws Exception {
         String json = "{\"itemid\":\"I999\",\"productid\":\"\"}";
+
         mockMvc.perform(post("/api/items")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(400));
     }
 
     @Test
     void testCreateItemWithNegativeQty() throws Exception {
         String json = "{\"itemid\":\"I999\",\"productid\":\"P001\",\"qty\":-5}";
+
         mockMvc.perform(post("/api/items")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(400));
     }
 
+    /**
+     * 边界值测试：库存为0应允许（边界值）
+     */
     @Test
     void testCreateItemWithZeroQty() throws Exception {
         when(itemService.insertItem(any(Item.class))).thenReturn(1);
-        String json = "{\"itemid\":\"I999\",\"productid\":\"P001\",\"qty\":0}";
+
+        String json = "{\"itemid\":\"EST-99\",\"productid\":\"FI-SW-01\",\"qty\":0}";
+
         mockMvc.perform(post("/api/items")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -155,11 +184,15 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.code").value(200));
     }
 
+    // ==================== 更新商品项 ====================
+
     @Test
     void testUpdateItem() throws Exception {
         when(itemService.updateItem(any(Item.class))).thenReturn(1);
-        String json = "{\"productid\":\"P001\",\"listprice\":19.99,\"qty\":500}";
-        mockMvc.perform(put("/api/items/I001")
+
+        String json = "{\"productid\":\"FI-SW-01\",\"listprice\":19.99,\"qty\":500}";
+
+        mockMvc.perform(put("/api/items/EST-1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
@@ -170,18 +203,23 @@ class ItemControllerTest {
     @Test
     void testUpdateItemFailure() throws Exception {
         when(itemService.updateItem(any(Item.class))).thenReturn(0);
-        String json = "{\"productid\":\"P001\",\"listprice\":19.99}";
-        mockMvc.perform(put("/api/items/I001")
+
+        String json = "{\"productid\":\"FI-SW-01\",\"listprice\":19.99}";
+
+        mockMvc.perform(put("/api/items/EST-1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(500));
     }
 
+    // ==================== 删除商品项 ====================
+
     @Test
     void testDeleteItem() throws Exception {
-        when(itemService.deleteItem("I001")).thenReturn(1);
-        mockMvc.perform(delete("/api/items/I001"))
+        when(itemService.deleteItem("EST-1")).thenReturn(1);
+
+        mockMvc.perform(delete("/api/items/EST-1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.message").value("删除成功"));
@@ -189,8 +227,9 @@ class ItemControllerTest {
 
     @Test
     void testDeleteItemFailure() throws Exception {
-        when(itemService.deleteItem("I001")).thenReturn(0);
-        mockMvc.perform(delete("/api/items/I001"))
+        when(itemService.deleteItem("EST-1")).thenReturn(0);
+
+        mockMvc.perform(delete("/api/items/EST-1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(500));
     }

@@ -29,9 +29,10 @@ public class Account implements Serializable {
     }
 
     public void setAdmin(boolean b) {
+        this.role = b ? "ADMIN" : "USER";
     }
 
     public String getFullName() {
-        return null;
+        return (firstname != null ? firstname : "") + " " + (lastname != null ? lastname : "");
     }
 }

@@ -34,7 +34,7 @@ class ResultTest {
     @Test
     void testError() {
         Result<String> result = Result.error(503, "出错了");
-        assertEquals(500, result.getCode());
+        assertEquals(503, result.getCode());
         assertEquals("出错了", result.getMessage());
         assertNull(result.getData());
     }

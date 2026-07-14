@@ -1,245 +1,466 @@
 package com.jpetstore.controller;
 
-import com.jpetstore.common.Result;
 import com.jpetstore.domain.*;
 import com.jpetstore.service.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 
-import jakarta.validation.Valid;
-import java.util.List;
+import java.util.Collections;
 
-@RestController
-@RequestMapping("/api/admin")
-public class AdminController {
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@WebMvcTest(value = AdminController.class, excludeAutoConfiguration = {DataSourceAutoConfiguration.class, MybatisAutoConfiguration.class})
+class AdminControllerTest {
 
     @Autowired
+    private MockMvc mockMvc;
+
+    @MockitoBean
     private CategoryService categoryService;
 
-    @Autowired
+    @MockitoBean
     private ProductService productService;
 
-    @Autowired
+    @MockitoBean
     private ItemService itemService;
 
-    @Autowired
+    @MockitoBean
     private OrderService orderService;
 
-    @Autowired
+    @MockitoBean
     private AccountService accountService;
 
-    // ==================== 分类管理 ====================
+    private Account adminUser;
+    private Account normalUser;
 
-    @GetMapping("/categories")
-    public Result<List<Category>> getAllCategories() {
-        List<Category> categories = categoryService.getAllCategories();
-        return Result.success(categories);
+    @BeforeEach
+    void setUp() {
+        adminUser = new Account();
+        adminUser.setUserid("admin");
+        adminUser.setEmail("admin@jpetstore.com");
+        adminUser.setFirstname("Admin");
+        adminUser.setLastname("User");
+        adminUser.setRole("ADMIN");
+
+        normalUser = new Account();
+        normalUser.setUserid("testuser");
+        normalUser.setEmail("test@example.com");
+        normalUser.setFirstname("Test");
+        normalUser.setLastname("User");
+        normalUser.setRole("USER");
     }
 
-    @GetMapping("/categories/{catid}")
-    public Result<Category> getCategoryById(@PathVariable String catid) {
-        Category category = categoryService.getCategoryById(catid);
-        if (category != null) {
-            return Result.success(category);
-        }
-        return Result.notFound("分类不存在");
+    // ==================== 权限测试 ====================
+
+    @Test
+    void testAccessAdminApiWithoutLogin() throws Exception {
+        mockMvc.perform(get("/api/admin/categories"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value(401))
+                .andExpect(jsonPath("$.message").value("请先登录"));
     }
 
-    @PostMapping("/categories")
-    public Result<String> createCategory(@Valid @RequestBody Category category) {
-        int result = categoryService.insertCategory(category);
-        if (result > 0) {
-            return Result.success("创建成功", "创建成功");
-        }
-        return Result.error(503, "创建失败");
+    @Test
+    void testAccessAdminApiAsNormalUser() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", normalUser);
+
+        mockMvc.perform(get("/api/admin/categories")
+                        .session(session))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.code").value(403))
+                .andExpect(jsonPath("$.message").value("需要管理员权限"));
     }
 
-    @PutMapping("/categories/{catid}")
-    public Result<String> updateCategory(@PathVariable String catid, @RequestBody Category category) {
-        category.setCatid(catid);
-        int result = categoryService.updateCategory(category);
-        if (result > 0) {
-            return Result.success("更新成功", "更新成功");
-        }
-        return Result.error(503, "更新失败");
+    // ==================== 分类管理测试 ====================
+
+    @Test
+    void testGetAllCategories() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", adminUser);
+
+        when(categoryService.getAllCategories()).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/api/admin/categories")
+                        .session(session))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200));
     }
 
-    @DeleteMapping("/categories/{catid}")
-    public Result<String> deleteCategory(@PathVariable String catid) {
-        int result = categoryService.deleteCategory(catid);
-        if (result > 0) {
-            return Result.success("删除成功", "删除成功");
-        }
-        return Result.error(503, "删除失败");
+    @Test
+    void testGetCategoryById() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", adminUser);
+
+        Category category = new Category();
+        category.setCatid("FISH");
+        category.setName("鱼类");
+
+        when(categoryService.getCategoryById("FISH")).thenReturn(category);
+
+        mockMvc.perform(get("/api/admin/categories/FISH")
+                        .session(session))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.data.catid").value("FISH"));
     }
 
-    // ==================== 产品管理 ====================
+    @Test
+    void testCreateCategory() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", adminUser);
 
-    @GetMapping("/products")
-    public Result<List<Product>> getAllProducts() {
-        List<Product> products = productService.getAllProducts();
-        return Result.success(products);
+        when(categoryService.insertCategory(any(Category.class))).thenReturn(1);
+
+        String json = "{\"catid\":\"BIRDS\",\"name\":\"鸟类\",\"description\":\"各种宠物鸟\"}";
+
+        mockMvc.perform(post("/api/admin/categories")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.message").value("创建成功"));
     }
 
-    @GetMapping("/products/{productid}")
-    public Result<Product> getProductById(@PathVariable String productid) {
-        Product product = productService.getProductById(productid);
-        if (product != null) {
-            List<Item> items = itemService.getItemsByProductId(productid);
-            product.setItems(items);
-            return Result.success(product);
-        }
-        return Result.notFound("产品不存在");
+    @Test
+    void testUpdateCategory() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", adminUser);
+
+        when(categoryService.updateCategory(any(Category.class))).thenReturn(1);
+
+        String json = "{\"name\":\"鱼类\",\"description\":\"各种观赏鱼\"}";
+
+        mockMvc.perform(put("/api/admin/categories/FISH")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.message").value("更新成功"));
     }
 
-    @PostMapping("/products")
-    public Result<String> createProduct(@Valid @RequestBody Product product) {
-        int result = productService.insertProduct(product);
-        if (result > 0) {
-            return Result.success("创建成功", "创建成功");
-        }
-        return Result.error(503, "创建失败");
+    @Test
+    void testDeleteCategory() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", adminUser);
+
+        when(categoryService.deleteCategory("FISH")).thenReturn(1);
+
+        mockMvc.perform(delete("/api/admin/categories/FISH")
+                        .session(session))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.message").value("删除成功"));
     }
 
-    @PutMapping("/products/{productid}")
-    public Result<String> updateProduct(@PathVariable String productid, @RequestBody Product product) {
-        product.setProductid(productid);
-        int result = productService.updateProduct(product);
-        if (result > 0) {
-            return Result.success("更新成功", "更新成功");
-        }
-        return Result.error(503, "更新失败");
+    // ==================== 产品管理测试 ====================
+
+    @Test
+    void testGetAllProducts() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", adminUser);
+
+        when(productService.getAllProducts()).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/api/admin/products")
+                        .session(session))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200));
     }
 
-    @DeleteMapping("/products/{productid}")
-    public Result<String> deleteProduct(@PathVariable String productid) {
-        int result = productService.deleteProduct(productid);
-        if (result > 0) {
-            return Result.success("删除成功", "删除成功");
-        }
-        return Result.error(503, "删除失败");
+    @Test
+    void testGetProductById() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", adminUser);
+
+        Product product = new Product();
+        product.setProductid("P001");
+        product.setName("神仙鱼");
+
+        when(productService.getProductById("P001")).thenReturn(product);
+        when(itemService.getItemsByProductId("P001")).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/api/admin/products/P001")
+                        .session(session))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.data.productid").value("P001"));
     }
 
-    // ==================== 商品项管理 ====================
+    @Test
+    void testCreateProduct() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", adminUser);
 
-    @GetMapping("/products/{productid}/items")
-    public Result<List<Item>> getProductItems(@PathVariable String productid) {
-        List<Item> items = itemService.getItemsByProductId(productid);
-        return Result.success(items);
+        when(productService.insertProduct(any(Product.class))).thenReturn(1);
+
+        String json = "{\"productid\":\"P002\",\"category\":\"FISH\",\"name\":\"虎鲨\",\"description\":\"大型海水鱼\"}";
+
+        mockMvc.perform(post("/api/admin/products")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.message").value("创建成功"));
     }
 
-    @PostMapping("/items")
-    public Result<String> createItem(@Valid @RequestBody Item item) {
-        int result = itemService.insertItem(item);
-        if (result > 0) {
-            return Result.success("创建成功", "创建成功");
-        }
-        return Result.error(503, "创建失败");
+    @Test
+    void testUpdateProduct() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", adminUser);
+
+        when(productService.updateProduct(any(Product.class))).thenReturn(1);
+
+        String json = "{\"category\":\"FISH\",\"name\":\"神仙鱼\",\"description\":\"来自澳大利亚\"}";
+
+        mockMvc.perform(put("/api/admin/products/P001")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.message").value("更新成功"));
     }
 
-    @PutMapping("/items/{itemid}")
-    public Result<String> updateItem(@PathVariable String itemid, @RequestBody Item item) {
-        item.setItemid(itemid);
-        int result = itemService.updateItem(item);
-        if (result > 0) {
-            return Result.success("更新成功", "更新成功");
-        }
-        return Result.error(503, "更新失败");
+    @Test
+    void testDeleteProduct() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", adminUser);
+
+        when(productService.deleteProduct("P001")).thenReturn(1);
+
+        mockMvc.perform(delete("/api/admin/products/P001")
+                        .session(session))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.message").value("删除成功"));
     }
 
-    @DeleteMapping("/items/{itemid}")
-    public Result<String> deleteItem(@PathVariable String itemid) {
-        int result = itemService.deleteItem(itemid);
-        if (result > 0) {
-            return Result.success("删除成功", "删除成功");
-        }
-        return Result.error(503, "删除失败");
+    // ==================== 商品项管理测试 ====================
+
+    @Test
+    void testGetProductItems() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", adminUser);
+
+        when(itemService.getItemsByProductId("P001")).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/api/admin/products/P001/items")
+                        .session(session))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200));
     }
 
-    @PutMapping("/items/{itemid}/inventory")
-    public Result<String> updateInventory(@PathVariable String itemid, @RequestParam int quantity) {
-        int result = itemService.updateInventory(itemid, quantity);
-        if (result > 0) {
-            return Result.success("库存更新成功", "库存更新成功");
-        }
-        return Result.error(503, "库存更新失败");
+    @Test
+    void testCreateItem() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", adminUser);
+
+        when(itemService.insertItem(any(Item.class))).thenReturn(1);
+
+        String json = "{\"itemid\":\"EST-1\",\"productid\":\"P001\",\"listprice\":16.50,\"qty\":100}";
+
+        mockMvc.perform(post("/api/admin/items")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.message").value("创建成功"));
     }
 
-    // ==================== 订单管理 ====================
+    @Test
+    void testUpdateItem() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", adminUser);
 
-    @GetMapping("/orders")
-    public Result<List<Order>> getAllOrders() {
-        List<Order> orders = orderService.getAllOrders();
-        return Result.success(orders);
+        when(itemService.updateItem(any(Item.class))).thenReturn(1);
+
+        String json = "{\"productid\":\"P001\",\"listprice\":18.50,\"qty\":50}";
+
+        mockMvc.perform(put("/api/admin/items/EST-1")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.message").value("更新成功"));
     }
 
-    @GetMapping("/orders/{orderid}")
-    public Result<Order> getOrderById(@PathVariable Integer orderid) {
-        Order order = orderService.getOrderById(orderid);
-        if (order != null) {
-            List<OrderItem> items = orderService.getOrderItemsByOrderId(orderid);
-            order.setOrderItems(items);
-            return Result.success(order);
-        }
-        return Result.notFound("订单不存在");
+    @Test
+    void testDeleteItem() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", adminUser);
+
+        when(itemService.deleteItem("EST-1")).thenReturn(1);
+
+        mockMvc.perform(delete("/api/admin/items/EST-1")
+                        .session(session))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.message").value("删除成功"));
     }
 
-    @PutMapping("/orders/{orderid}/status")
-    public Result<String> updateOrderStatus(@PathVariable Integer orderid, @RequestParam String status) {
-        boolean success = orderService.updateOrderStatus(orderid, status);
-        if (success) {
-            return Result.success("状态更新成功", "状态更新成功");
-        }
-        return Result.error(503, "状态更新失败");
+    @Test
+    void testUpdateInventory() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", adminUser);
+
+        when(itemService.updateInventory("EST-1", 200)).thenReturn(1);
+
+        mockMvc.perform(put("/api/admin/items/EST-1/inventory")
+                        .session(session)
+                        .param("quantity", "200"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.message").value("库存更新成功"));
     }
 
-    // ==================== 用户管理 ====================
+    // ==================== 订单管理测试 ====================
 
-    @GetMapping("/users")
-    public Result<List<Account>> getAllUsers() {
-        List<Account> users = accountService.getAllUsers();
-        return Result.success(users);
+    @Test
+    void testGetAllOrders() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", adminUser);
+
+        when(orderService.getAllOrders()).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/api/admin/orders")
+                        .session(session))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200));
     }
 
-    @GetMapping("/users/{userid}")
-    public Result<Account> getUserById(@PathVariable String userid) {
-        Account account = accountService.getAccountByUsername(userid);
-        if (account != null) {
-            return Result.success(account);
-        }
-        return Result.notFound("用户不存在");
+    @Test
+    void testGetOrderById() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", adminUser);
+
+        Order order = new Order();
+        order.setOrderid(1);
+        order.setUserid("testuser");
+
+        when(orderService.getOrderById(1)).thenReturn(order);
+        when(orderService.getOrderItemsByOrderId(1)).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/api/admin/orders/1")
+                        .session(session))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.data.orderid").value(1));
     }
 
-    @PutMapping("/users/{userid}")
-    public Result<String> updateUser(@PathVariable String userid, @RequestBody Account account) {
-        account.setUserid(userid);
-        boolean success = accountService.updateAccount(account);
-        if (success) {
-            return Result.success("更新成功", "更新成功");
-        }
-        return Result.error(503, "更新失败");
+    @Test
+    void testUpdateOrderStatus() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", adminUser);
+
+        when(orderService.updateOrderStatus(1, "SHIPPED")).thenReturn(true);
+
+        mockMvc.perform(put("/api/admin/orders/1/status")
+                        .session(session)
+                        .param("status", "SHIPPED"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.message").value("状态更新成功"));
     }
 
-    @DeleteMapping("/users/{userid}")
-    public Result<String> deleteUser(@PathVariable String userid) {
-        boolean success = accountService.deleteAccount(userid);
-        if (success) {
-            return Result.success("删除成功", "删除成功");
-        }
-        return Result.error(503, "删除失败");
+    // ==================== 用户管理测试 ====================
+
+    @Test
+    void testGetAllUsers() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", adminUser);
+
+        mockMvc.perform(get("/api/admin/users")
+                        .session(session))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200));
     }
 
-    @PutMapping("/users/{userid}/role")
-    public Result<String> updateUserRole(@PathVariable String userid, @RequestParam String role) {
-        Account account = accountService.getAccountByUsername(userid);
-        if (account == null) {
-            return Result.notFound("用户不存在");
-        }
-        account.setRole(role);
-        boolean success = accountService.updateAccount(account);
-        if (success) {
-            return Result.success("角色更新成功", "角色更新成功");
-        }
-        return Result.error(503, "角色更新失败");
+    @Test
+    void testGetUserById() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", adminUser);
+
+        Account account = new Account();
+        account.setUserid("testuser");
+        account.setEmail("test@example.com");
+
+        when(accountService.getAccountByUsername("testuser")).thenReturn(account);
+
+        mockMvc.perform(get("/api/admin/users/testuser")
+                        .session(session))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.data.userid").value("testuser"));
+    }
+
+    @Test
+    void testUpdateUser() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", adminUser);
+
+        when(accountService.updateAccount(any(Account.class))).thenReturn(true);
+
+        String json = "{\"email\":\"updated@example.com\",\"firstname\":\"Updated\",\"lastname\":\"User\"," +
+                "\"addr1\":\"123 St\",\"city\":\"City\",\"state\":\"ST\",\"zip\":\"12345\"," +
+                "\"country\":\"USA\",\"phone\":\"555-1234\"}";
+
+        mockMvc.perform(put("/api/admin/users/testuser")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.message").value("更新成功"));
+    }
+
+    @Test
+    void testDeleteUser() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", adminUser);
+
+        when(accountService.deleteAccount("testuser")).thenReturn(true);
+
+        mockMvc.perform(delete("/api/admin/users/testuser")
+                        .session(session))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.message").value("删除成功"));
+    }
+
+    @Test
+    void testUpdateUserRole() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", adminUser);
+
+        Account account = new Account();
+        account.setUserid("testuser");
+        account.setRole("USER");
+
+        when(accountService.getAccountByUsername("testuser")).thenReturn(account);
+        when(accountService.updateAccount(any(Account.class))).thenReturn(true);
+
+        mockMvc.perform(put("/api/admin/users/testuser/role")
+                        .session(session)
+                        .param("role", "ADMIN"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.message").value("角色更新成功"));
     }
 }

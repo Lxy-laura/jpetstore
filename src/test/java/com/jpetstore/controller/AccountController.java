@@ -12,6 +12,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -22,10 +24,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * 账户控制器集成测试
- */
-@WebMvcTest(AccountController.class)
+@WebMvcTest(value = AccountController.class, excludeAutoConfiguration = {DataSourceAutoConfiguration.class, MybatisAutoConfiguration.class})
 class AccountControllerTest {
 
     @Autowired
@@ -36,18 +35,6 @@ class AccountControllerTest {
 
     @MockitoBean
     private AccountMapper accountMapper;
-
-    @MockitoBean
-    private com.jpetstore.mapper.CategoryMapper categoryMapper;
-
-    @MockitoBean
-    private com.jpetstore.mapper.ProductMapper productMapper;
-
-    @MockitoBean
-    private com.jpetstore.mapper.ItemMapper itemMapper;
-
-    @MockitoBean
-    private com.jpetstore.mapper.OrderMapper orderMapper;
 
     private Account testAccount;
 
@@ -268,7 +255,7 @@ class AccountControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(500));
+                .andExpect(jsonPath("$.code").value(400));
     }
 
     /**
@@ -293,7 +280,7 @@ class AccountControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(500));
+                .andExpect(jsonPath("$.code").value(400));
     }
 
     /**
@@ -322,7 +309,7 @@ class AccountControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(500));
+                .andExpect(jsonPath("$.code").value(400));
     }
 
     // --- 技巧3: 缺少参数的测试 ---
@@ -335,7 +322,7 @@ class AccountControllerTest {
         mockMvc.perform(post("/api/account/login")
                         .param("password", "password"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(500));
+                .andExpect(jsonPath("$.code").value(400));
     }
 
     /**
@@ -346,7 +333,7 @@ class AccountControllerTest {
         mockMvc.perform(post("/api/account/login")
                         .param("username", "testuser"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(500));
+                .andExpect(jsonPath("$.code").value(400));
     }
 
     /**
@@ -356,7 +343,7 @@ class AccountControllerTest {
     void testLoginWithoutAnyParams() throws Exception {
         mockMvc.perform(post("/api/account/login"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(500));
+                .andExpect(jsonPath("$.code").value(400));
     }
 
     // --- 技巧4: 更新操作的异常路径 ---

@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -24,11 +26,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * 产品控制器测试
- * 覆盖正常路径、异常路径、参数化测试、边界值测试
- */
-@WebMvcTest(ProductController.class)
+@WebMvcTest(value = ProductController.class, excludeAutoConfiguration = {DataSourceAutoConfiguration.class, MybatisAutoConfiguration.class})
 class ProductControllerTest {
 
     @Autowired
@@ -40,34 +38,17 @@ class ProductControllerTest {
     @MockitoBean
     private ItemService itemService;
 
-    @MockitoBean
-    private com.jpetstore.mapper.AccountMapper accountMapper;
-
-    @MockitoBean
-    private com.jpetstore.mapper.CategoryMapper categoryMapper;
-
-    @MockitoBean
-    private com.jpetstore.mapper.ProductMapper productMapper;
-
-    @MockitoBean
-    private com.jpetstore.mapper.ItemMapper itemMapper;
-
-    @MockitoBean
-    private com.jpetstore.mapper.OrderMapper orderMapper;
-
     private Product testProduct;
 
     @BeforeEach
     void setUp() {
         testProduct = new Product();
-        testProduct.setProductid("FI-SW-01");
+        testProduct.setProductid("P001");
         testProduct.setCategory("FISH");
-        testProduct.setName("Angelfish");
-        testProduct.setDescription("Freshwater angelfish");
+        testProduct.setName("神仙鱼");
+        testProduct.setDescription("淡水神仙鱼");
         testProduct.setImage("fish1.jpg");
     }
-
-    // ==================== 获取所有产品 ====================
 
     @Test
     void testGetAllProducts() throws Exception {
@@ -78,8 +59,8 @@ class ProductControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data[0].productid").value("FI-SW-01"))
-                .andExpect(jsonPath("$.data[0].name").value("Angelfish"));
+                .andExpect(jsonPath("$.data[0].productid").value("P001"))
+                .andExpect(jsonPath("$.data[0].name").value("神仙鱼"));
     }
 
     @Test
@@ -92,8 +73,6 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data").isEmpty());
     }
-
-    // ==================== 按分类获取产品 ====================
 
     @Test
     void testGetProductsByCategory() throws Exception {
@@ -116,9 +95,6 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.data").isEmpty());
     }
 
-    /**
-     * 参数化测试：用不同的分类ID测试
-     */
     @ParameterizedTest
     @ValueSource(strings = {"FISH", "DOGS", "CATS", "REPTILES", "BIRDS"})
     void testGetProductsByDifferentCategories(String category) throws Exception {
@@ -129,8 +105,6 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.code").value(200));
     }
 
-    // ==================== 搜索产品 ====================
-
     @Test
     void testSearchProducts() throws Exception {
         when(productService.searchProducts("fish")).thenReturn(Arrays.asList(testProduct));
@@ -139,7 +113,7 @@ class ProductControllerTest {
                         .param("keyword", "fish"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
-                .andExpect(jsonPath("$.data[0].name").value("Angelfish"));
+                .andExpect(jsonPath("$.data[0].name").value("神仙鱼"));
     }
 
     @Test
@@ -156,14 +130,11 @@ class ProductControllerTest {
     void testSearchProductsWithoutKeyword() throws Exception {
         mockMvc.perform(get("/api/products/search"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(500));
+                .andExpect(jsonPath("$.code").value(400));
     }
 
-    /**
-     * 参数化测试：用不同的搜索关键词测试
-     */
     @ParameterizedTest
-    @ValueSource(strings = {"fish", "dog", "cat", "Angel", "Bulldog"})
+    @ValueSource(strings = {"fish", "dog", "cat", "神仙", "斗牛"})
     void testSearchWithDifferentKeywords(String keyword) throws Exception {
         when(productService.searchProducts(keyword)).thenReturn(Arrays.asList(testProduct));
 
@@ -173,18 +144,16 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.code").value(200));
     }
 
-    // ==================== 获取产品详情 ====================
-
     @Test
     void testGetProductById() throws Exception {
-        when(productService.getProductById("FI-SW-01")).thenReturn(testProduct);
-        when(itemService.getItemsByProductId("FI-SW-01")).thenReturn(Collections.emptyList());
+        when(productService.getProductById("P001")).thenReturn(testProduct);
+        when(itemService.getItemsByProductId("P001")).thenReturn(Collections.emptyList());
 
-        mockMvc.perform(get("/api/products/FI-SW-01"))
+        mockMvc.perform(get("/api/products/P001"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
-                .andExpect(jsonPath("$.data.productid").value("FI-SW-01"))
-                .andExpect(jsonPath("$.data.name").value("Angelfish"))
+                .andExpect(jsonPath("$.data.productid").value("P001"))
+                .andExpect(jsonPath("$.data.name").value("神仙鱼"))
                 .andExpect(jsonPath("$.data.items").isArray());
     }
 
@@ -201,51 +170,47 @@ class ProductControllerTest {
     @Test
     void testGetProductByIdWithItems() throws Exception {
         Item item = new Item();
-        item.setItemid("EST-1");
-        item.setProductid("FI-SW-01");
+        item.setItemid("I001");
+        item.setProductid("P001");
         item.setListprice(new BigDecimal("16.50"));
 
-        when(productService.getProductById("FI-SW-01")).thenReturn(testProduct);
-        when(itemService.getItemsByProductId("FI-SW-01")).thenReturn(Arrays.asList(item));
+        when(productService.getProductById("P001")).thenReturn(testProduct);
+        when(itemService.getItemsByProductId("P001")).thenReturn(Arrays.asList(item));
 
-        mockMvc.perform(get("/api/products/FI-SW-01"))
+        mockMvc.perform(get("/api/products/P001"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.items[0].itemid").value("EST-1"))
+                .andExpect(jsonPath("$.data.items[0].itemid").value("I001"))
                 .andExpect(jsonPath("$.data.items[0].listprice").value(16.50));
     }
-
-    // ==================== 获取产品下的商品项 ====================
 
     @Test
     void testGetProductItems() throws Exception {
         Item item = new Item();
-        item.setItemid("EST-1");
-        item.setProductid("FI-SW-01");
+        item.setItemid("I001");
+        item.setProductid("P001");
 
-        when(itemService.getItemsByProductId("FI-SW-01")).thenReturn(Arrays.asList(item));
+        when(itemService.getItemsByProductId("P001")).thenReturn(Arrays.asList(item));
 
-        mockMvc.perform(get("/api/products/FI-SW-01/items"))
+        mockMvc.perform(get("/api/products/P001/items"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
-                .andExpect(jsonPath("$.data[0].itemid").value("EST-1"));
+                .andExpect(jsonPath("$.data[0].itemid").value("I001"));
     }
 
     @Test
     void testGetProductItemsEmpty() throws Exception {
-        when(itemService.getItemsByProductId("FI-SW-01")).thenReturn(Collections.emptyList());
+        when(itemService.getItemsByProductId("P001")).thenReturn(Collections.emptyList());
 
-        mockMvc.perform(get("/api/products/FI-SW-01/items"))
+        mockMvc.perform(get("/api/products/P001/items"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").isEmpty());
     }
-
-    // ==================== 创建产品 ====================
 
     @Test
     void testCreateProduct() throws Exception {
         when(productService.insertProduct(any(Product.class))).thenReturn(1);
 
-        String json = "{\"productid\":\"FI-SW-99\",\"category\":\"FISH\",\"name\":\"TestFish\",\"description\":\"Test\",\"price\":19.99}";
+        String json = "{\"productid\":\"P999\",\"category\":\"FISH\",\"name\":\"测试鱼\",\"description\":\"测试\"}";
 
         mockMvc.perform(post("/api/products")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -259,7 +224,7 @@ class ProductControllerTest {
     void testCreateProductFailure() throws Exception {
         when(productService.insertProduct(any(Product.class))).thenReturn(0);
 
-        String json = "{\"productid\":\"FI-SW-99\",\"category\":\"FISH\",\"name\":\"TestFish\",\"description\":\"Test\",\"price\":19.99}";
+        String json = "{\"productid\":\"P999\",\"category\":\"FISH\",\"name\":\"测试鱼\",\"description\":\"测试\"}";
 
         mockMvc.perform(post("/api/products")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -271,46 +236,44 @@ class ProductControllerTest {
 
     @Test
     void testCreateProductWithBlankId() throws Exception {
-        String json = "{\"productid\":\"\",\"category\":\"FISH\",\"name\":\"TestFish\",\"price\":19.99}";
+        String json = "{\"productid\":\"\",\"category\":\"FISH\",\"name\":\"测试鱼\"}";
 
         mockMvc.perform(post("/api/products")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(500));
+                .andExpect(jsonPath("$.code").value(400));
     }
 
     @Test
     void testCreateProductWithBlankCategory() throws Exception {
-        String json = "{\"productid\":\"FI-SW-99\",\"category\":\"\",\"name\":\"TestFish\",\"price\":19.99}";
+        String json = "{\"productid\":\"P999\",\"category\":\"\",\"name\":\"测试鱼\"}";
 
         mockMvc.perform(post("/api/products")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(500));
+                .andExpect(jsonPath("$.code").value(400));
     }
 
     @Test
     void testCreateProductWithBlankName() throws Exception {
-        String json = "{\"productid\":\"FI-SW-99\",\"category\":\"FISH\",\"name\":\"\",\"price\":19.99}";
+        String json = "{\"productid\":\"P999\",\"category\":\"FISH\",\"name\":\"\"}";
 
         mockMvc.perform(post("/api/products")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(500));
+                .andExpect(jsonPath("$.code").value(400));
     }
-
-    // ==================== 更新产品 ====================
 
     @Test
     void testUpdateProduct() throws Exception {
         when(productService.updateProduct(any(Product.class))).thenReturn(1);
 
-        String json = "{\"productid\":\"FI-SW-01\",\"category\":\"FISH\",\"name\":\"Updated Fish\",\"description\":\"Updated\",\"price\":19.99}";
+        String json = "{\"category\":\"FISH\",\"name\":\"更新鱼\",\"description\":\"更新\"}";
 
-        mockMvc.perform(put("/api/products/FI-SW-01")
+        mockMvc.perform(put("/api/products/P001")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
@@ -322,9 +285,9 @@ class ProductControllerTest {
     void testUpdateProductFailure() throws Exception {
         when(productService.updateProduct(any(Product.class))).thenReturn(0);
 
-        String json = "{\"productid\":\"FI-SW-01\",\"category\":\"FISH\",\"name\":\"Updated Fish\",\"price\":19.99}";
+        String json = "{\"category\":\"FISH\",\"name\":\"更新鱼\"}";
 
-        mockMvc.perform(put("/api/products/FI-SW-01")
+        mockMvc.perform(put("/api/products/P001")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
@@ -332,13 +295,11 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.message").value("更新失败"));
     }
 
-    // ==================== 删除产品 ====================
-
     @Test
     void testDeleteProduct() throws Exception {
-        when(productService.deleteProduct("FI-SW-01")).thenReturn(1);
+        when(productService.deleteProduct("P001")).thenReturn(1);
 
-        mockMvc.perform(delete("/api/products/FI-SW-01"))
+        mockMvc.perform(delete("/api/products/P001"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.message").value("删除成功"));
@@ -346,9 +307,9 @@ class ProductControllerTest {
 
     @Test
     void testDeleteProductFailure() throws Exception {
-        when(productService.deleteProduct("FI-SW-01")).thenReturn(0);
+        when(productService.deleteProduct("P001")).thenReturn(0);
 
-        mockMvc.perform(delete("/api/products/FI-SW-01"))
+        mockMvc.perform(delete("/api/products/P001"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(500))
                 .andExpect(jsonPath("$.message").value("删除失败"));

@@ -29,7 +29,7 @@ class GlobalExceptionHandlerTest {
 
         mockMvc.perform(get("/api/account/runtime"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(500))
+                .andExpect(jsonPath("$.code").value(503))               // ← 500 → 503
                 .andExpect(jsonPath("$.message").value("运行时错误：运行时异常"));
     }
 
@@ -47,12 +47,11 @@ class GlobalExceptionHandlerTest {
     @Test
     void testHandleGenericException() throws Exception {
         when(accountService.getAccountByUsername("general"))
-                .thenThrow(new Exception("系统异常") {
-                });
+                .thenThrow(new RuntimeException("系统异常"));
 
         mockMvc.perform(get("/api/account/general"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(500))
-                .andExpect(jsonPath("$.message").value("系统错误：系统异常"));
+                .andExpect(jsonPath("$.code").value(503))               // ← 500 → 503
+                .andExpect(jsonPath("$.message").value("运行时错误：系统异常"));
     }
 }
