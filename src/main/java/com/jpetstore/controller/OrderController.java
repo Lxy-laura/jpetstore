@@ -36,7 +36,7 @@ public class OrderController {
             session.setAttribute("cart", cart);
             return Result.success("订单创建成功", createdOrder);
         }
-        return Result.error(503, "订单创建失败");
+        return Result.error(500, "订单创建失败");
     }
 
 
@@ -74,7 +74,7 @@ public class OrderController {
         if (success) {
             return Result.success("状态更新成功", "状态更新成功");
         }
-        return Result.error(503, "状态更新失败");
+        return Result.error(500, "状态更新失败");
     }
 
     @GetMapping("/{orderid}/items")

@@ -254,7 +254,7 @@ class AccountControllerTest {
         mockMvc.perform(post("/api/account/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(400));
     }
 
@@ -279,7 +279,7 @@ class AccountControllerTest {
         mockMvc.perform(post("/api/account/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(400));
     }
 
@@ -308,7 +308,7 @@ class AccountControllerTest {
         mockMvc.perform(post("/api/account/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(400));
     }
 
@@ -321,7 +321,7 @@ class AccountControllerTest {
     void testLoginWithoutUsernameParam() throws Exception {
         mockMvc.perform(post("/api/account/login")
                         .param("password", "password"))
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(400));
     }
 
@@ -332,7 +332,7 @@ class AccountControllerTest {
     void testLoginWithoutPasswordParam() throws Exception {
         mockMvc.perform(post("/api/account/login")
                         .param("username", "testuser"))
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(400));
     }
 
@@ -342,7 +342,7 @@ class AccountControllerTest {
     @Test
     void testLoginWithoutAnyParams() throws Exception {
         mockMvc.perform(post("/api/account/login"))
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(400));
     }
 

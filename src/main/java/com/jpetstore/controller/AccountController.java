@@ -31,7 +31,7 @@ public class AccountController {
         if (success) {
             return Result.success("注册成功", "注册成功");
         }
-        return Result.error(503, "注册失败");
+        return Result.error(500, "注册失败");
     }
 
     @GetMapping("/current")
@@ -60,7 +60,7 @@ public class AccountController {
             session.setAttribute("user", accountService.getAccountByUsername(userid));
             return Result.success("更新成功", "更新成功");
         }
-        return Result.error(503, "更新失败");
+        return Result.error(500, "更新失败");
     }
 
     @DeleteMapping("/{userid}")
@@ -69,7 +69,7 @@ public class AccountController {
         if (success) {
             return Result.success("删除成功", "删除成功");
         }
-        return Result.error(503, "删除失败");
+        return Result.error(500, "删除失败");
     }
 
     @PostMapping("/logout")

@@ -142,7 +142,7 @@ class ItemControllerTest {
         mockMvc.perform(post("/api/items")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(400));
     }
 
@@ -153,7 +153,7 @@ class ItemControllerTest {
         mockMvc.perform(post("/api/items")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(400));
     }
 
@@ -164,7 +164,7 @@ class ItemControllerTest {
         mockMvc.perform(post("/api/items")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(400));
     }
 
@@ -190,7 +190,7 @@ class ItemControllerTest {
     void testUpdateItem() throws Exception {
         when(itemService.updateItem(any(Item.class))).thenReturn(1);
 
-        String json = "{\"productid\":\"FI-SW-01\",\"listprice\":19.99,\"qty\":500}";
+        String json = "{\"itemid\":\"EST-1\",\"productid\":\"FI-SW-01\",\"listprice\":19.99,\"qty\":500}";
 
         mockMvc.perform(put("/api/items/EST-1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -204,7 +204,7 @@ class ItemControllerTest {
     void testUpdateItemFailure() throws Exception {
         when(itemService.updateItem(any(Item.class))).thenReturn(0);
 
-        String json = "{\"productid\":\"FI-SW-01\",\"listprice\":19.99}";
+        String json = "{\"itemid\":\"EST-1\",\"productid\":\"FI-SW-01\",\"listprice\":19.99}";
 
         mockMvc.perform(put("/api/items/EST-1")
                         .contentType(MediaType.APPLICATION_JSON)

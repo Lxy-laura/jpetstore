@@ -241,21 +241,21 @@ class CartControllerTest {
     @Test
     void testAddToCartWithoutItemIdParam() throws Exception {
         mockMvc.perform(post("/api/cart/add"))
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(400));
     }
 
     @Test
     void testRemoveFromCartWithoutItemIdParam() throws Exception {
         mockMvc.perform(post("/api/cart/remove"))
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(400));
     }
 
     @Test
     void testUpdateQuantityWithoutQuantityParam() throws Exception {
         mockMvc.perform(post("/api/cart/update").param("itemId", "I001"))
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(400));
     }
 

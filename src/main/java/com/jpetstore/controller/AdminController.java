@@ -43,7 +43,7 @@ public class AdminController {
     public Result<String> createCategory(@Valid @RequestBody Category category) {
         return categoryService.insertCategory(category) > 0
                 ? Result.success("创建成功", "创建成功")
-                : Result.error(503, "创建失败");
+                : Result.error(500, "创建失败");
     }
 
     @PutMapping("/categories/{catid}")
@@ -51,14 +51,14 @@ public class AdminController {
         category.setCatid(catid);
         return categoryService.updateCategory(category) > 0
                 ? Result.success("更新成功", "更新成功")
-                : Result.error(503, "更新失败");
+                : Result.error(500, "更新失败");
     }
 
     @DeleteMapping("/categories/{catid}")
     public Result<String> deleteCategory(@PathVariable String catid) {
         return categoryService.deleteCategory(catid) > 0
                 ? Result.success("删除成功", "删除成功")
-                : Result.error(503, "删除失败");
+                : Result.error(500, "删除失败");
     }
 
     // ==================== 产品管理 ====================
@@ -103,7 +103,7 @@ public class AdminController {
                 Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
                 imagePath = "/uploads/" + newFilename;
             } catch (IOException e) {
-                return Result.error(503, "图片上传失败: " + e.getMessage());
+                return Result.error(500, "图片上传失败: " + e.getMessage());
             }
         }
 
@@ -118,7 +118,7 @@ public class AdminController {
         if (result > 0) {
             return Result.success("创建成功", "创建成功");
         }
-        return Result.error(503, "创建失败");
+        return Result.error(500, "创建失败");
     }
     /**
      * 更新产品
@@ -156,7 +156,7 @@ public class AdminController {
                 Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
                 imagePath = "/uploads/" + newFilename;
             } catch (IOException e) {
-                return Result.error(503, "图片上传失败: " + e.getMessage());
+                return Result.error(500, "图片上传失败: " + e.getMessage());
             }
         }
 
@@ -173,14 +173,14 @@ public class AdminController {
         if (result > 0) {
             return Result.success("更新成功", "更新成功");
         }
-        return Result.error(503, "更新失败");
+        return Result.error(500, "更新失败");
     }
 
     @DeleteMapping("/products/{productid}")
     public Result<String> deleteProduct(@PathVariable String productid) {
         return productService.deleteProduct(productid) > 0
                 ? Result.success("删除成功", "删除成功")
-                : Result.error(503, "删除失败");
+                : Result.error(500, "删除失败");
     }
 
     // ==================== 商品项管理 ====================
@@ -193,7 +193,7 @@ public class AdminController {
     public Result<String> createItem(@Valid @RequestBody Item item) {
         return itemService.insertItem(item) > 0
                 ? Result.success("创建成功", "创建成功")
-                : Result.error(503, "创建失败");
+                : Result.error(500, "创建失败");
     }
 
     @PutMapping("/items/{itemid}")
@@ -201,21 +201,21 @@ public class AdminController {
         item.setItemid(itemid);
         return itemService.updateItem(item) > 0
                 ? Result.success("更新成功", "更新成功")
-                : Result.error(503, "更新失败");
+                : Result.error(500, "更新失败");
     }
 
     @DeleteMapping("/items/{itemid}")
     public Result<String> deleteItem(@PathVariable String itemid) {
         return itemService.deleteItem(itemid) > 0
                 ? Result.success("删除成功", "删除成功")
-                : Result.error(503, "删除失败");
+                : Result.error(500, "删除失败");
     }
 
     @PutMapping("/items/{itemid}/inventory")
     public Result<String> updateInventory(@PathVariable String itemid, @RequestParam int quantity) {
         return itemService.updateInventory(itemid, quantity) > 0
                 ? Result.success("库存更新成功", "库存更新成功")
-                : Result.error(503, "库存更新失败");
+                : Result.error(500, "库存更新失败");
     }
     /**
      * 上下架产品
@@ -226,13 +226,13 @@ public class AdminController {
             @PathVariable String productid,
             @RequestParam String status) {
         if (!"ON_SALE".equals(status) && !"OFF_SALE".equals(status)) {
-            return Result.error(503, "状态值无效");
+            return Result.error(500, "状态值无效");
         }
         int result = productService.updateProductStatus(productid, status);
         if (result > 0) {
             return Result.success("状态更新成功", "状态更新成功");
         }
-        return Result.error(503, "状态更新失败");
+        return Result.error(500, "状态更新失败");
     }
 
     // ==================== 订单管理 ====================
@@ -255,7 +255,7 @@ public class AdminController {
     public Result<String> updateOrderStatus(@PathVariable Integer orderid, @RequestParam String status) {
         return orderService.updateOrderStatus(orderid, status)
                 ? Result.success("状态更新成功", "状态更新成功")
-                : Result.error(503, "状态更新失败");
+                : Result.error(500, "状态更新失败");
     }
 
     // ==================== 用户管理 ====================
@@ -275,14 +275,14 @@ public class AdminController {
         account.setUserid(userid);
         return accountService.updateAccount(account)
                 ? Result.success("更新成功", "更新成功")
-                : Result.error(503, "更新失败");
+                : Result.error(500, "更新失败");
     }
 
     @DeleteMapping("/users/{userid}")
     public Result<String> deleteUser(@PathVariable String userid) {
         return accountService.deleteAccount(userid)
                 ? Result.success("删除成功", "删除成功")
-                : Result.error(503, "删除失败");
+                : Result.error(500, "删除失败");
     }
 
     @PutMapping("/users/{userid}/role")
@@ -292,6 +292,6 @@ public class AdminController {
         account.setRole(role);
         return accountService.updateAccount(account)
                 ? Result.success("角色更新成功", "角色更新成功")
-                : Result.error(503, "角色更新失败");
+                : Result.error(500, "角色更新失败");
     }
 }

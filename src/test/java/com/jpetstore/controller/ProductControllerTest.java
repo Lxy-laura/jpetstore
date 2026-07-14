@@ -129,7 +129,7 @@ class ProductControllerTest {
     @Test
     void testSearchProductsWithoutKeyword() throws Exception {
         mockMvc.perform(get("/api/products/search"))
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(400));
     }
 
@@ -241,7 +241,7 @@ class ProductControllerTest {
         mockMvc.perform(post("/api/products")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(400));
     }
 
@@ -252,7 +252,7 @@ class ProductControllerTest {
         mockMvc.perform(post("/api/products")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(400));
     }
 
@@ -263,7 +263,7 @@ class ProductControllerTest {
         mockMvc.perform(post("/api/products")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(400));
     }
 
@@ -271,7 +271,7 @@ class ProductControllerTest {
     void testUpdateProduct() throws Exception {
         when(productService.updateProduct(any(Product.class))).thenReturn(1);
 
-        String json = "{\"category\":\"FISH\",\"name\":\"更新鱼\",\"description\":\"更新\"}";
+        String json = "{\"productid\":\"P001\",\"category\":\"FISH\",\"name\":\"更新鱼\",\"description\":\"更新\"}";
 
         mockMvc.perform(put("/api/products/P001")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -285,7 +285,7 @@ class ProductControllerTest {
     void testUpdateProductFailure() throws Exception {
         when(productService.updateProduct(any(Product.class))).thenReturn(0);
 
-        String json = "{\"category\":\"FISH\",\"name\":\"更新鱼\"}";
+        String json = "{\"productid\":\"P001\",\"category\":\"FISH\",\"name\":\"更新鱼\"}";
 
         mockMvc.perform(put("/api/products/P001")
                         .contentType(MediaType.APPLICATION_JSON)
