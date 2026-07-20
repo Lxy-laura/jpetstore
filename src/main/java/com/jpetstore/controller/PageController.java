@@ -18,11 +18,14 @@ public class PageController {
     @Autowired private ItemService itemService;
     @Autowired private AccountService accountService;
     @Autowired private OrderService orderService;
+    @Autowired private RecommendationService recommendationService;
 
     @GetMapping("/")
-    public String index(Model model) {
+    public String index(Model model, HttpSession session) {
         model.addAttribute("categories", categoryService.getAllCategories());
         model.addAttribute("products", productService.getAllProducts());
+        model.addAttribute("recommendations", recommendationService.getRecommendations(session, 8));
+        model.addAttribute("recentViews", recommendationService.getRecentViews(session));
         return "index";
     }
 
@@ -34,10 +37,12 @@ public class PageController {
     }
 
     @GetMapping("/product/{productid}")
-    public String product(@PathVariable String productid, Model model) {
+    public String product(@PathVariable String productid, Model model, HttpSession session) {
         Product product = productService.getProductById(productid);
         if (product != null) {
             product.setItems(itemService.getItemsByProductId(productid));
+            recommendationService.recordView(session, product);
+            model.addAttribute("relatedProducts", recommendationService.getRelatedProducts(productid, 4));
         }
         model.addAttribute("product", product);
         return "product";
@@ -116,9 +121,10 @@ public class PageController {
     /**
      * 退出登录（页面路由）
      */
-    @GetMapping("/logout")
+    @RequestMapping(value = "/logout", method = {RequestMethod.GET, RequestMethod.POST})
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/login";
     }
 }
+

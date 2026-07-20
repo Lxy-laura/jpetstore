@@ -1,5 +1,8 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head">
+    <link th:href="@{/css/chatbot.css}" rel="stylesheet">
+</head>
 <body>
 
 <!-- 导航栏 -->
@@ -30,12 +33,10 @@
                         <li><a class="dropdown-item" th:href="@{/category/CATS}">猫咪</a></li>
                         <li><a class="dropdown-item" th:href="@{/category/REPTILES}">爬行动物</a></li>
                         <li><a class="dropdown-item" th:href="@{/category/BIRDS}">鸟类</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" th:href="@{/category/SNACKS}">宠物零食</a></li>
-                        <li><a class="dropdown-item" th:href="@{/category/SUPPLIES}">宠物用品</a></li>
                     </ul>
                 </li>
                 <li class="nav-item"><a class="nav-link" th:href="@{/cart}"><i class="bi bi-cart3 me-1"></i>购物车</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/wishlist}"><i class="bi bi-heart me-1"></i>心愿单</a></li>
                 <li class="nav-item dropdown" th:if="${session.user != null}">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                         <i class="bi bi-person-circle me-1"></i><span th:text="${session.user.firstname}">用户</span>
@@ -88,6 +89,9 @@
         </div>
     </div>
 </footer>
+
+<!-- AI Chatbot 小宠 -->
+<div th:replace="~{fragments/chatbot :: chatbot}"></div>
 
 </body>
 </html>

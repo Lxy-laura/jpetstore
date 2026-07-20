@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>后台管理 - JPetStore</title>
+    <title>鍚庡彴绠＄悊 - JPetStore</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <style>
@@ -18,11 +18,11 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
     <div class="container-fluid">
-        <a class="navbar-brand fw-bold" th:href="@{/}"><i class="bi bi-paw-fill me-2"></i>JPetStore 后台管理</a>
+        <a class="navbar-brand fw-bold" th:href="@{/}"><i class="bi bi-paw-fill me-2"></i>JPetStore 鍚庡彴绠＄悊</a>
         <div class="navbar-nav ms-auto">
-            <span class="nav-link text-light"><i class="bi bi-person-circle me-1"></i><span th:text="${session.user.firstname}"></span> <span class="badge bg-danger">管理员</span></span>
+            <span class="nav-link text-light"><i class="bi bi-person-circle me-1"></i><span th:text="${session.user.firstname}"></span> <span class="badge bg-danger">绠＄悊鍛?/span></span>
             <form th:action="@{/logout}" method="post" class="d-inline">
-                <button type="submit" class="nav-link btn btn-link text-light"><i class="bi bi-box-arrow-right me-1"></i>退出</button>
+                <button type="submit" class="nav-link btn btn-link text-light"><i class="bi bi-box-arrow-right me-1"></i>閫€鍑?/button>
             </form>
         </div>
     </div>
@@ -31,37 +31,37 @@
 <div class="row g-0">
     <div class="col-md-2 bg-dark text-white sidebar">
         <div class="p-4">
-            <h5 class="mb-4"><i class="bi bi-grid-3x3-gap me-2"></i>管理菜单</h5>
+            <h5 class="mb-4"><i class="bi bi-grid-3x3-gap me-2"></i>绠＄悊鑿滃崟</h5>
             <ul class="nav flex-column">
                 <li class="nav-item mb-1">
                     <a href="#dashboard" class="nav-link text-white active" data-section="dashboard">
-                        <i class="bi bi-speedometer2 me-2"></i>仪表盘
+                        <i class="bi bi-speedometer2 me-2"></i>浠〃鐩?
                     </a>
                 </li>
                 <li class="nav-item mb-1">
                     <a href="#categories" class="nav-link text-white" data-section="categories">
-                        <i class="bi bi-grid me-2"></i>分类管理
+                        <i class="bi bi-grid me-2"></i>鍒嗙被绠＄悊
                     </a>
                 </li>
                 <li class="nav-item mb-1">
                     <a href="#products" class="nav-link text-white" data-section="products">
-                        <i class="bi bi-box-seam me-2"></i>产品管理
+                        <i class="bi bi-box-seam me-2"></i>浜у搧绠＄悊
                     </a>
                 </li>
                 <li class="nav-item mb-1">
                     <a href="#orders" class="nav-link text-white" data-section="orders">
-                        <i class="bi bi-receipt me-2"></i>订单管理
+                        <i class="bi bi-receipt me-2"></i>璁㈠崟绠＄悊
                     </a>
                 </li>
                 <li class="nav-item mb-1">
                     <a href="#users" class="nav-link text-white" data-section="users">
-                        <i class="bi bi-people me-2"></i>用户管理
+                        <i class="bi bi-people me-2"></i>鐢ㄦ埛绠＄悊
                     </a>
                 </li>
                 <hr class="my-3">
                 <li class="nav-item">
                     <a th:href="@{/}" class="nav-link text-white">
-                        <i class="bi bi-arrow-left me-2"></i>返回前台
+                        <i class="bi bi-arrow-left me-2"></i>杩斿洖鍓嶅彴
                     </a>
                 </li>
             </ul>
@@ -70,15 +70,15 @@
 
     <div class="col-md-10 content-area bg-light">
         <div class="p-4">
-            <!-- 仪表盘 -->
+            <!-- 浠〃鐩?-->
             <div id="section-dashboard" class="content-section">
-                <h2 class="mb-4"><i class="bi bi-speedometer2 me-2"></i>仪表盘</h2>
+                <h2 class="mb-4"><i class="bi bi-speedometer2 me-2"></i>浠〃鐩?/h2>
                 <div class="row g-4">
                     <div class="col-md-3">
                         <div class="card stat-card bg-primary text-white">
                             <div class="card-body">
                                 <div class="float-end"><i class="bi bi-grid text-4xl opacity-50"></i></div>
-                                <h6 class="text-white-80">分类数量</h6>
+                                <h6 class="text-white-80">鍒嗙被鏁伴噺</h6>
                                 <h3 class="fw-bold" th:text="${categoryCount}">0</h3>
                             </div>
                         </div>
@@ -87,7 +87,7 @@
                         <div class="card stat-card bg-success text-white">
                             <div class="card-body">
                                 <div class="float-end"><i class="bi bi-box-seam text-4xl opacity-50"></i></div>
-                                <h6 class="text-white-80">产品数量</h6>
+                                <h6 class="text-white-80">浜у搧鏁伴噺</h6>
                                 <h3 class="fw-bold" th:text="${productCount}">0</h3>
                             </div>
                         </div>
@@ -96,7 +96,7 @@
                         <div class="card stat-card bg-warning text-white">
                             <div class="card-body">
                                 <div class="float-end"><i class="bi bi-receipt text-4xl opacity-50"></i></div>
-                                <h6 class="text-white-80">订单数量</h6>
+                                <h6 class="text-white-80">璁㈠崟鏁伴噺</h6>
                                 <h3 class="fw-bold" th:text="${orderCount}">0</h3>
                             </div>
                         </div>
@@ -105,76 +105,76 @@
                         <div class="card stat-card bg-info text-white">
                             <div class="card-body">
                                 <div class="float-end"><i class="bi bi-people text-4xl opacity-50"></i></div>
-                                <h6 class="text-white-80">用户数量</h6>
+                                <h6 class="text-white-80">鐢ㄦ埛鏁伴噺</h6>
                                 <h3 class="fw-bold" th:text="${userCount}">0</h3>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="mt-4 card">
-                    <div class="card-header"><h5><i class="bi bi-info-circle me-2"></i>快捷操作</h5></div>
+                    <div class="card-header"><h5><i class="bi bi-info-circle me-2"></i>蹇嵎鎿嶄綔</h5></div>
                     <div class="card-body">
                         <div class="row g-3">
-                            <div class="col-md-2"><button class="btn btn-primary w-100" onclick="showModal('category')"><i class="bi bi-plus-circle me-1"></i>添加分类</button></div>
-                            <div class="col-md-2"><button class="btn btn-success w-100" onclick="showModal('product')"><i class="bi bi-plus-circle me-1"></i>添加产品</button></div>
-                            <div class="col-md-2"><button class="btn btn-warning w-100" onclick="loadOrders()"><i class="bi bi-refresh me-1"></i>刷新订单</button></div>
-                            <div class="col-md-2"><button class="btn btn-info w-100" onclick="loadUsers()"><i class="bi bi-refresh me-1"></i>刷新用户</button></div>
+                            <div class="col-md-2"><button class="btn btn-primary w-100" onclick="showModal('category')"><i class="bi bi-plus-circle me-1"></i>娣诲姞鍒嗙被</button></div>
+                            <div class="col-md-2"><button class="btn btn-success w-100" onclick="showModal('product')"><i class="bi bi-plus-circle me-1"></i>娣诲姞浜у搧</button></div>
+                            <div class="col-md-2"><button class="btn btn-warning w-100" onclick="loadOrders()"><i class="bi bi-refresh me-1"></i>鍒锋柊璁㈠崟</button></div>
+                            <div class="col-md-2"><button class="btn btn-info w-100" onclick="loadUsers()"><i class="bi bi-refresh me-1"></i>鍒锋柊鐢ㄦ埛</button></div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 分类管理 -->
+            <!-- 鍒嗙被绠＄悊 -->
             <div id="section-categories" class="content-section d-none">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2><i class="bi bi-grid me-2"></i>分类管理</h2>
-                    <button class="btn btn-primary" onclick="showModal('category')"><i class="bi bi-plus-circle me-1"></i>添加分类</button>
+                    <h2><i class="bi bi-grid me-2"></i>鍒嗙被绠＄悊</h2>
+                    <button class="btn btn-primary" onclick="showModal('category')"><i class="bi bi-plus-circle me-1"></i>娣诲姞鍒嗙被</button>
                 </div>
                 <table class="table table-striped table-hover">
                     <thead class="bg-dark text-white">
-                    <tr><th>分类ID</th><th>名称</th><th>描述</th><th>操作</th></tr>
+                    <tr><th>鍒嗙被ID</th><th>鍚嶇О</th><th>鎻忚堪</th><th>鎿嶄綔</th></tr>
                     </thead>
                     <tbody id="categoryTableBody"></tbody>
                 </table>
             </div>
 
-            <!-- 产品管理 -->
+            <!-- 浜у搧绠＄悊 -->
             <div id="section-products" class="content-section d-none">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2><i class="bi bi-box-seam me-2"></i>产品管理</h2>
-                    <button class="btn btn-success" onclick="showModal('product')"><i class="bi bi-plus-circle me-1"></i>添加产品</button>
+                    <h2><i class="bi bi-box-seam me-2"></i>浜у搧绠＄悊</h2>
+                    <button class="btn btn-success" onclick="showModal('product')"><i class="bi bi-plus-circle me-1"></i>娣诲姞浜у搧</button>
                 </div>
                 <table class="table table-striped table-hover">
                     <thead class="bg-dark text-white">
-                    <tr><th>图片</th><th>产品ID</th><th>分类</th><th>名称</th><th>价格</th><th>状态</th><th>描述</th><th>操作</th></tr>
+                    <tr><th>鍥剧墖</th><th>浜у搧ID</th><th>鍒嗙被</th><th>鍚嶇О</th><th>浠锋牸</th><th>鐘舵€?/th><th>鎻忚堪</th><th>鎿嶄綔</th></tr>
                     </thead>
                     <tbody id="productTableBody"></tbody>
                 </table>
             </div>
 
-            <!-- 订单管理 -->
+            <!-- 璁㈠崟绠＄悊 -->
             <div id="section-orders" class="content-section d-none">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2><i class="bi bi-receipt me-2"></i>订单管理</h2>
-                    <button class="btn btn-warning" onclick="loadOrders()"><i class="bi bi-refresh me-1"></i>刷新</button>
+                    <h2><i class="bi bi-receipt me-2"></i>璁㈠崟绠＄悊</h2>
+                    <button class="btn btn-warning" onclick="loadOrders()"><i class="bi bi-refresh me-1"></i>鍒锋柊</button>
                 </div>
                 <table class="table table-striped table-hover">
                     <thead class="bg-dark text-white">
-                    <tr><th>订单ID</th><th>用户</th><th>日期</th><th>总价</th><th>状态</th><th>操作</th></tr>
+                    <tr><th>璁㈠崟ID</th><th>鐢ㄦ埛</th><th>鏃ユ湡</th><th>鎬讳环</th><th>鐘舵€?/th><th>鎿嶄綔</th></tr>
                     </thead>
                     <tbody id="orderTableBody"></tbody>
                 </table>
             </div>
 
-            <!-- 用户管理 -->
+            <!-- 鐢ㄦ埛绠＄悊 -->
             <div id="section-users" class="content-section d-none">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2><i class="bi bi-people me-2"></i>用户管理</h2>
-                    <button class="btn btn-info" onclick="loadUsers()"><i class="bi bi-refresh me-1"></i>刷新</button>
+                    <h2><i class="bi bi-people me-2"></i>鐢ㄦ埛绠＄悊</h2>
+                    <button class="btn btn-info" onclick="loadUsers()"><i class="bi bi-refresh me-1"></i>鍒锋柊</button>
                 </div>
                 <table class="table table-striped table-hover">
                     <thead class="bg-dark text-white">
-                    <tr><th>用户名</th><th>邮箱</th><th>姓名</th><th>角色</th><th>状态</th><th>操作</th></tr>
+                    <tr><th>鐢ㄦ埛鍚?/th><th>閭</th><th>濮撳悕</th><th>瑙掕壊</th><th>鐘舵€?/th><th>鎿嶄綔</th></tr>
                     </thead>
                     <tbody id="userTableBody"></tbody>
                 </table>
@@ -183,12 +183,12 @@
     </div>
 </div>
 
-<!-- 弹窗 -->
+<!-- 寮圭獥 -->
 <div class="modal fade" id="dataModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalTitle">添加数据</h5>
+                <h5 class="modal-title" id="modalTitle">娣诲姞鏁版嵁</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -199,8 +199,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-primary" onclick="submitForm()">保存</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">鍙栨秷</button>
+                <button type="button" class="btn btn-primary" onclick="submitForm()">淇濆瓨</button>
             </div>
         </div>
     </div>
@@ -210,12 +210,12 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="detailTitle">详情</h5>
+                <h5 class="modal-title" id="detailTitle">璇︽儏</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body" id="detailContent"></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">鍏抽棴</button>
             </div>
         </div>
     </div>
@@ -241,21 +241,21 @@
     function showModal(type, data = null) {
         document.getElementById('formType').value = type;
         document.getElementById('formId').value = data ? (type === 'category' ? data.catid : data.productid) : '';
-        document.getElementById('modalTitle').textContent = data ? '编辑' + (type === 'category' ? '分类' : '产品') : '添加' + (type === 'category' ? '分类' : '产品');
+        document.getElementById('modalTitle').textContent = data ? '缂栬緫' + (type === 'category' ? '鍒嗙被' : '浜у搧') : '娣诲姞' + (type === 'category' ? '鍒嗙被' : '浜у搧');
 
         let fields = '';
         if (type === 'category') {
             fields = `
                 <div class="mb-3">
-                    <label class="form-label">分类ID</label>
+                    <label class="form-label">鍒嗙被ID</label>
                     <input type="text" class="form-control" id="catid" ${data ? 'readonly' : 'required'} value="${data ? data.catid : ''}">
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">名称</label>
+                    <label class="form-label">鍚嶇О</label>
                     <input type="text" class="form-control" id="name" required value="${data ? data.name : ''}">
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">描述</label>
+                    <label class="form-label">鎻忚堪</label>
                     <textarea class="form-control" id="description">${data ? data.description : ''}</textarea>
                 </div>
             `;
@@ -264,42 +264,42 @@
                 ? `<img src="${data.image}" class="img-fluid rounded mb-2" style="max-height: 150px;" id="currentImage">`
                 : '';
             const statusOptions = `
-                <option value="ON_SALE" ${data && data.status === 'ON_SALE' ? 'selected' : ''}>在售</option>
-                <option value="OFF_SALE" ${data && data.status === 'OFF_SALE' ? 'selected' : ''}>下架</option>
+                <option value="ON_SALE" ${data && data.status === 'ON_SALE' ? 'selected' : ''}>鍦ㄥ敭</option>
+                <option value="OFF_SALE" ${data && data.status === 'OFF_SALE' ? 'selected' : ''}>涓嬫灦</option>
             `;
             fields = `
                 <div class="mb-3">
-                    <label class="form-label">产品ID</label>
+                    <label class="form-label">浜у搧ID</label>
                     <input type="text" class="form-control" id="productid" ${data ? 'readonly' : 'required'} value="${data ? data.productid : ''}">
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">分类</label>
+                    <label class="form-label">鍒嗙被</label>
                     <select class="form-select" id="category" required></select>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">名称</label>
+                    <label class="form-label">鍚嶇О</label>
                     <input type="text" class="form-control" id="name" required value="${data ? data.name : ''}">
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">价格 (元) <span class="text-danger">*</span></label>
+                    <label class="form-label">浠锋牸 (鍏? <span class="text-danger">*</span></label>
                     <input type="number" class="form-control" id="price" required step="0.01" min="0.01" value="${data && data.price != null ? data.price : ''}">
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">状态</label>
+                    <label class="form-label">鐘舵€?/label>
                     <select class="form-select" id="status">${statusOptions}</select>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">描述</label>
+                    <label class="form-label">鎻忚堪</label>
                     <textarea class="form-control" id="description">${data ? data.description : ''}</textarea>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">产品图片</label>
+                    <label class="form-label">浜у搧鍥剧墖</label>
                     ${imgHtml}
                     <input type="file" class="form-control" id="image" name="image" accept="image/*">
                     <div class="mt-2" id="imagePreview" style="display: none;">
                         <img id="previewImg" src="" class="img-fluid rounded" style="max-height: 200px;">
                     </div>
-                    <div class="form-text">选择图片后会自动预览，编辑时如不选择新图片则保留原图片</div>
+                    <div class="form-text">閫夋嫨鍥剧墖鍚庝細鑷姩棰勮锛岀紪杈戞椂濡備笉閫夋嫨鏂板浘鐗囧垯淇濈暀鍘熷浘鐗?/div>
                 </div>
             `;
         }
@@ -369,7 +369,7 @@
                 if (res.code === 200) {
                     modalInstance.hide();
                     loadProducts();
-                    showAlert('操作成功', 'success');
+                    showAlert('鎿嶄綔鎴愬姛', 'success');
                 } else {
                     showAlert(res.message, 'danger');
                 }
@@ -385,7 +385,7 @@
                 if (res.code === 200) {
                     modalInstance.hide();
                     type === 'category' ? loadCategories() : loadProducts();
-                    showAlert('操作成功', 'success');
+                    showAlert('鎿嶄綔鎴愬姛', 'success');
                 } else {
                     showAlert(res.message, 'danger');
                 }
@@ -416,12 +416,12 @@
                     ? `<img src="${p.image}" class="product-img-thumb" alt="${p.name}">`
                     : '<i class="bi bi-image text-muted"></i>';
                 const statusBadge = p.status === 'ON_SALE'
-                    ? '<span class="badge bg-success">在售</span>'
-                    : '<span class="badge bg-secondary">下架</span>';
+                    ? '<span class="badge bg-success">鍦ㄥ敭</span>'
+                    : '<span class="badge bg-secondary">涓嬫灦</span>';
                 const toggleBtn = p.status === 'ON_SALE'
-                    ? `<button class="btn btn-sm btn-warning ms-1" onclick="toggleProductStatus('${p.productid}', 'OFF_SALE')" title="下架"><i class="bi bi-arrow-down-circle"></i> 下架</button>`
-                    : `<button class="btn btn-sm btn-success ms-1" onclick="toggleProductStatus('${p.productid}', 'ON_SALE')" title="上架"><i class="bi bi-arrow-up-circle"></i> 上架</button>`;
-                const priceText = p.price != null ? '¥' + parseFloat(p.price).toFixed(2) : '¥0.00';
+                    ? `<button class="btn btn-sm btn-warning ms-1" onclick="toggleProductStatus('${p.productid}', 'OFF_SALE')" title="涓嬫灦"><i class="bi bi-arrow-down-circle"></i> 涓嬫灦</button>`
+                    : `<button class="btn btn-sm btn-success ms-1" onclick="toggleProductStatus('${p.productid}', 'ON_SALE')" title="涓婃灦"><i class="bi bi-arrow-up-circle"></i> 涓婃灦</button>`;
+                const priceText = p.price != null ? '楼' + parseFloat(p.price).toFixed(2) : '楼0.00';
                 return `
                 <tr>
                     <td>${imgHtml}</td>
@@ -443,13 +443,13 @@
     }
 
     function toggleProductStatus(productid, status) {
-        const action = status === 'ON_SALE' ? '上架' : '下架';
-        if (!confirm('确定要' + action + '该产品吗？')) return;
+        const action = status === 'ON_SALE' ? '涓婃灦' : '涓嬫灦';
+        if (!confirm('纭畾瑕? + action + '璇ヤ骇鍝佸悧锛?)) return;
         fetch('/api/admin/products/' + productid + '/status?status=' + status, { method: 'PUT' })
             .then(res => res.json()).then(res => {
             if (res.code === 200) {
                 loadProducts();
-                showAlert(action + '成功', 'success');
+                showAlert(action + '鎴愬姛', 'success');
             } else {
                 showAlert(res.message, 'danger');
             }
@@ -466,7 +466,7 @@
                     <td>$${o.totalprice}</td>
                     <td><span class="badge ${getOrderStatusClass(o.status)}">${getOrderStatusText(o.status)}</span></td>
                     <td>
-                        <button class="btn btn-sm btn-warning" onclick="updateOrderStatus(${o.orderid}, '${o.status}')"><i class="bi bi-check-circle"></i> 更新状态</button>
+                        <button class="btn btn-sm btn-warning" onclick="updateOrderStatus(${o.orderid}, '${o.status}')"><i class="bi bi-check-circle"></i> 鏇存柊鐘舵€?/button>
                         <button class="btn btn-sm btn-info ms-1" onclick="showOrderDetail(${o.orderid})"><i class="bi bi-eye"></i></button>
                     </td>
                 </tr>
@@ -481,10 +481,10 @@
                     <td>${u.userid}</td>
                     <td>${u.email}</td>
                     <td>${u.firstname} ${u.lastname}</td>
-                    <td><span class="badge ${u.role === 'ADMIN' ? 'bg-danger' : 'bg-info'}">${u.role === 'ADMIN' ? '管理员' : '普通用户'}</span></td>
-                    <td>${u.status === 'OK' ? '<span class="badge bg-success">正常</span>' : '<span class="badge bg-danger">禁用</span>'}</td>
+                    <td><span class="badge ${u.role === 'ADMIN' ? 'bg-danger' : 'bg-info'}">${u.role === 'ADMIN' ? '绠＄悊鍛? : '鏅€氱敤鎴?}</span></td>
+                    <td>${u.status === 'OK' ? '<span class="badge bg-success">姝ｅ父</span>' : '<span class="badge bg-danger">绂佺敤</span>'}</td>
                     <td>
-                        <button class="btn btn-sm btn-primary" onclick="toggleUserRole('${u.userid}', '${u.role}')">切换角色</button>
+                        <button class="btn btn-sm btn-primary" onclick="toggleUserRole('${u.userid}', '${u.role}')">鍒囨崲瑙掕壊</button>
                         <button class="btn btn-sm btn-danger ms-1" onclick="deleteUser('${u.userid}')"><i class="bi bi-trash"></i></button>
                     </td>
                 </tr>
@@ -493,12 +493,12 @@
     }
 
     function deleteItem(type, id) {
-        if (!confirm('确定要删除吗？')) return;
+        if (!confirm('纭畾瑕佸垹闄ゅ悧锛?)) return;
         fetch('/api/admin/' + type + '/' + id, { method: 'DELETE' })
             .then(res => res.json()).then(res => {
             if (res.code === 200) {
                 type === 'categories' ? loadCategories() : loadProducts();
-                showAlert('删除成功', 'success');
+                showAlert('鍒犻櫎鎴愬姛', 'success');
             } else {
                 showAlert(res.message, 'danger');
             }
@@ -506,12 +506,12 @@
     }
 
     function deleteUser(userid) {
-        if (!confirm('确定要删除该用户吗？')) return;
+        if (!confirm('纭畾瑕佸垹闄よ鐢ㄦ埛鍚楋紵')) return;
         fetch('/api/admin/users/' + userid, { method: 'DELETE' })
             .then(res => res.json()).then(res => {
             if (res.code === 200) {
                 loadUsers();
-                showAlert('删除成功', 'success');
+                showAlert('鍒犻櫎鎴愬姛', 'success');
             } else {
                 showAlert(res.message, 'danger');
             }
@@ -524,7 +524,7 @@
             .then(res => res.json()).then(res => {
             if (res.code === 200) {
                 loadUsers();
-                showAlert('角色更新成功', 'success');
+                showAlert('瑙掕壊鏇存柊鎴愬姛', 'success');
             } else {
                 showAlert(res.message, 'danger');
             }
@@ -539,7 +539,7 @@
             .then(res => res.json()).then(res => {
             if (res.code === 200) {
                 loadOrders();
-                showAlert('状态更新成功', 'success');
+                showAlert('鐘舵€佹洿鏂版垚鍔?, 'success');
             } else {
                 showAlert(res.message, 'danger');
             }
@@ -552,17 +552,17 @@
             const imgHtml = p.image
                 ? `<img src="${p.image}" class="img-fluid rounded mb-3" style="max-height: 250px;">`
                 : '<div class="bg-light rounded d-flex align-items-center justify-content-center mb-3" style="height: 200px;"><i class="bi bi-image text-muted" style="font-size: 3rem;"></i></div>';
-            const priceText = p.price != null ? '¥' + parseFloat(p.price).toFixed(2) : '¥0.00';
-            const statusText = p.status === 'ON_SALE' ? '<span class="badge bg-success">在售</span>' : '<span class="badge bg-secondary">下架</span>';
-            document.getElementById('detailTitle').textContent = p.name + ' - 产品详情';
+            const priceText = p.price != null ? '楼' + parseFloat(p.price).toFixed(2) : '楼0.00';
+            const statusText = p.status === 'ON_SALE' ? '<span class="badge bg-success">鍦ㄥ敭</span>' : '<span class="badge bg-secondary">涓嬫灦</span>';
+            document.getElementById('detailTitle').textContent = p.name + ' - 浜у搧璇︽儏';
             document.getElementById('detailContent').innerHTML = `
                 ${imgHtml}
-                <p><strong>产品ID：</strong>${p.productid}</p>
-                <p><strong>分类：</strong>${p.category}</p>
-                <p><strong>名称：</strong>${p.name}</p>
-                <p><strong>价格：</strong><span class="text-danger fw-bold">${priceText}</span></p>
-                <p><strong>状态：</strong>${statusText}</p>
-                <p><strong>描述：</strong>${p.description || '无'}</p>
+                <p><strong>浜у搧ID锛?/strong>${p.productid}</p>
+                <p><strong>鍒嗙被锛?/strong>${p.category}</p>
+                <p><strong>鍚嶇О锛?/strong>${p.name}</p>
+                <p><strong>浠锋牸锛?/strong><span class="text-danger fw-bold">${priceText}</span></p>
+                <p><strong>鐘舵€侊細</strong>${statusText}</p>
+                <p><strong>鎻忚堪锛?/strong>${p.description || '鏃?}</p>
             `;
             new bootstrap.Modal(document.getElementById('detailModal')).show();
         });
@@ -571,25 +571,25 @@
     function showOrderDetail(orderid) {
         fetch('/api/admin/orders/' + orderid).then(res => res.json()).then(res => {
             const o = res.data;
-            document.getElementById('detailTitle').textContent = '订单详情 - ' + orderid;
+            document.getElementById('detailTitle').textContent = '璁㈠崟璇︽儏 - ' + orderid;
             let itemsHtml = '';
             if (o.orderItems && o.orderItems.length > 0) {
-                itemsHtml = '<table class="table"><thead><tr><th>商品</th><th>数量</th><th>单价</th><th>小计</th></tr></thead><tbody>';
+                itemsHtml = '<table class="table"><thead><tr><th>鍟嗗搧</th><th>鏁伴噺</th><th>鍗曚环</th><th>灏忚</th></tr></thead><tbody>';
                 o.orderItems.forEach(item => {
                     itemsHtml += `<tr><td>${item.itemid}</td><td>${item.quantity}</td><td>$${item.unitprice}</td><td>$${(item.quantity * item.unitprice).toFixed(2)}</td></tr>`;
                 });
                 itemsHtml += '</tbody></table>';
             } else {
-                itemsHtml = '<p>暂无商品明细</p>';
+                itemsHtml = '<p>鏆傛棤鍟嗗搧鏄庣粏</p>';
             }
             document.getElementById('detailContent').innerHTML = `
-                <p><strong>订单ID：</strong>${o.orderid}</p>
-                <p><strong>用户：</strong>${o.userid}</p>
-                <p><strong>日期：</strong>${new Date(o.orderdate).toLocaleString()}</p>
-                <p><strong>总价：</strong><span class="text-danger fw-bold">$${o.totalprice}</span></p>
-                <p><strong>状态：</strong><span class="badge ${getOrderStatusClass(o.status)}">${getOrderStatusText(o.status)}</span></p>
+                <p><strong>璁㈠崟ID锛?/strong>${o.orderid}</p>
+                <p><strong>鐢ㄦ埛锛?/strong>${o.userid}</p>
+                <p><strong>鏃ユ湡锛?/strong>${new Date(o.orderdate).toLocaleString()}</p>
+                <p><strong>鎬讳环锛?/strong><span class="text-danger fw-bold">$${o.totalprice}</span></p>
+                <p><strong>鐘舵€侊細</strong><span class="badge ${getOrderStatusClass(o.status)}">${getOrderStatusText(o.status)}</span></p>
                 <hr>
-                <h6>商品明细</h6>
+                <h6>鍟嗗搧鏄庣粏</h6>
                 ${itemsHtml}
             `;
             new bootstrap.Modal(document.getElementById('detailModal')).show();
@@ -608,10 +608,10 @@
 
     function getOrderStatusText(status) {
         switch(status) {
-            case 'P': return '待处理';
-            case 'A': return '已确认';
-            case 'S': return '已发货';
-            case 'C': return '已完成';
+            case 'P': return '寰呭鐞?;
+            case 'A': return '宸茬‘璁?;
+            case 'S': return '宸插彂璐?;
+            case 'C': return '宸插畬鎴?;
             default: return status;
         }
     }

@@ -1,16 +1,16 @@
--- ============================================
--- JPetStore 数据库建表脚本
--- 适用于 MySQL 8.0
+﻿-- ============================================
+-- JPetStore 鏁版嵁搴撳缓琛ㄨ剼鏈?
+-- 閫傜敤浜?MySQL 8.0
 -- ============================================
 
--- 创建数据库（如果不存在）
+-- 鍒涘缓鏁版嵁搴擄紙濡傛灉涓嶅瓨鍦級
 CREATE DATABASE IF NOT EXISTS jpetstore DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- 使用数据库
+-- 浣跨敤鏁版嵁搴?
 USE jpetstore;
 
 -- ============================================
--- 1. 删除已有表（按依赖关系逆序删除）
+-- 1. 鍒犻櫎宸叉湁琛紙鎸変緷璧栧叧绯婚€嗗簭鍒犻櫎锛?
 -- ============================================
 DROP TABLE IF EXISTS orderstatus;
 DROP TABLE IF EXISTS lineitem;
@@ -23,10 +23,10 @@ DROP TABLE IF EXISTS signon;
 DROP TABLE IF EXISTS account;
 
 -- ============================================
--- 2. 创建表
+-- 2. 鍒涘缓琛?
 -- ============================================
 
--- 账户表
+-- 璐︽埛琛?
 CREATE TABLE account (
                          userid    VARCHAR(80) NOT NULL,
                          email     VARCHAR(80) NOT NULL,
@@ -40,17 +40,18 @@ CREATE TABLE account (
                          zip       VARCHAR(20) NOT NULL,
                          country   VARCHAR(20) NOT NULL,
                          phone     VARCHAR(80) NOT NULL,
-                         PRIMARY KEY (userid)
+                        role      VARCHAR(20) NULL DEFAULT 'USER',
+                        PRIMARY KEY (userid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 登录信息表
+-- 鐧诲綍淇℃伅琛?
 CREATE TABLE signon (
                         username VARCHAR(25) NOT NULL,
                         password VARCHAR(25) NOT NULL,
                         PRIMARY KEY (username)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 用户资料表
+-- 鐢ㄦ埛璧勬枡琛?
 CREATE TABLE profile (
                          userid      VARCHAR(80) NOT NULL,
                          langpref    VARCHAR(80) NOT NULL,
@@ -60,7 +61,7 @@ CREATE TABLE profile (
                          PRIMARY KEY (userid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 分类表
+-- 鍒嗙被琛?
 CREATE TABLE category (
                           catid       VARCHAR(10) NOT NULL,
                           name        VARCHAR(80) NULL,
@@ -68,17 +69,19 @@ CREATE TABLE category (
                           PRIMARY KEY (catid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 产品表
+-- 浜у搧琛?
 CREATE TABLE product (
                          productid   VARCHAR(10) NOT NULL,
                          category    VARCHAR(10) NOT NULL,
                          name        VARCHAR(80) NULL,
                          description VARCHAR(255) NULL,
                          image       VARCHAR(255) NULL,
-                         PRIMARY KEY (productid)
+                        price       DECIMAL(10,2) NULL DEFAULT 0.00,
+                        status      VARCHAR(20)    NULL DEFAULT 'ON_SALE',
+                        PRIMARY KEY (productid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 商品项表
+-- 鍟嗗搧椤硅〃
 CREATE TABLE item (
                       itemid    VARCHAR(10)    NOT NULL,
                       productid VARCHAR(10)    NOT NULL,
@@ -95,7 +98,7 @@ CREATE TABLE item (
                       PRIMARY KEY (itemid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 订单表
+-- 璁㈠崟琛?
 CREATE TABLE orders (
                         orderid        INT            NOT NULL AUTO_INCREMENT,
                         userid         VARCHAR(80)    NOT NULL,
@@ -126,7 +129,7 @@ CREATE TABLE orders (
                         PRIMARY KEY (orderid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 订单项表
+-- 璁㈠崟椤硅〃
 CREATE TABLE lineitem (
                           orderid  INT            NOT NULL,
                           linenum  INT            NOT NULL,
@@ -136,7 +139,7 @@ CREATE TABLE lineitem (
                           PRIMARY KEY (orderid, linenum)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 订单状态表
+-- 璁㈠崟鐘舵€佽〃
 CREATE TABLE orderstatus (
                              orderid   INT      NOT NULL,
                              linenum   INT      NOT NULL,
@@ -146,10 +149,10 @@ CREATE TABLE orderstatus (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================
--- 3. 插入测试数据
+-- 3. 鎻掑叆娴嬭瘯鏁版嵁
 -- ============================================
 
--- 插入分类数据
+-- 鎻掑叆鍒嗙被鏁版嵁
 INSERT INTO category (catid, name, description) VALUES
                                                     ('FISH', 'Fish', 'Various fish species for your aquarium'),
                                                     ('DOGS', 'Dogs', 'Different dog breeds as loyal companions'),
@@ -157,30 +160,30 @@ INSERT INTO category (catid, name, description) VALUES
                                                     ('REPTILES', 'Reptiles', 'Exotic reptile species'),
                                                     ('BIRDS', 'Birds', 'Colorful and singing bird species');
 
--- 插入产品数据
-INSERT INTO product (productid, category, name, description, image) VALUES
-                                                                        ('FI-SW-01', 'FISH', 'Angelfish', 'Freshwater angelfish, beautiful and peaceful', 'fish1.jpg'),
-                                                                        ('FI-SW-02', 'FISH', 'Tiger Shark', 'A striking freshwater shark species', 'fish2.jpg'),
-                                                                        ('FI-FW-01', 'FISH', 'Koi', 'Japanese ornamental carp, symbol of good luck', 'fish3.jpg'),
-                                                                        ('FI-FW-02', 'FISH', 'Goldfish', 'Classic goldfish, easy to care for', 'fish4.jpg'),
-                                                                        ('K9-BD-01', 'DOGS', 'Bulldog', 'Friendly and courageous breed', 'dog1.jpg'),
-                                                                        ('K9-BD-02', 'DOGS', 'Poodle', 'Intelligent and hypoallergenic breed', 'dog2.jpg'),
-                                                                        ('K9-DL-01', 'DOGS', 'Dalmatian', 'Energetic spotted breed', 'dog3.jpg'),
-                                                                        ('K9-PO-02', 'DOGS', 'Golden Retriever', 'Friendly and devoted family dog', 'dog4.jpg'),
-                                                                        ('K9-RT-01', 'DOGS', 'Labrador Retriever', 'Most popular dog breed in America', 'dog5.jpg'),
-                                                                        ('K9-RT-02', 'DOGS', 'Chihuahua', 'Tiny but mighty companion dog', 'dog6.jpg'),
-                                                                        ('C9-DL-01', 'CATS', 'Amazon Parrot', 'Colorful and talkative bird', 'cat1.jpg'),
-                                                                        ('C9-DL-02', 'CATS', 'Persian Cat', 'Fluffy and gentle long-haired cat', 'cat2.jpg'),
-                                                                        ('C9-PO-01', 'CATS', 'Siamese Cat', 'Elegant and vocal breed', 'cat3.jpg'),
-                                                                        ('C9-PO-02', 'CATS', 'Maine Coon', 'Large and friendly breed', 'cat4.jpg'),
+-- 鎻掑叆浜у搧鏁版嵁
+INSERT INTO product (productid, category, name, description, image, price, status) VALUES
+                                                                        ('FI-SW-01', 'FISH', 'Angelfish', 'Freshwater angelfish, beautiful and peaceful', 'fish1.jpg', 18.50, 'ON_SALE')
+                                                                        ('FI-SW-02', 'FISH', 'Tiger Shark', 'A striking freshwater shark species', 'fish2.jpg', 18.50, 'ON_SALE')
+                                                                        ('FI-FW-01', 'FISH', 'Koi', 'Japanese ornamental carp, symbol of good luck', 'fish3.jpg', 18.50, 'ON_SALE')
+                                                                        ('FI-FW-02', 'FISH', 'Goldfish', 'Classic goldfish, easy to care for', 'fish4.jpg', 18.50, 'ON_SALE')
+                                                                        ('K9-BD-01', 'DOGS', 'Bulldog', 'Friendly and courageous breed', 'dog1.jpg'), 18.50, 'ON_SALE'),
+                                                                        ('K9-BD-02', 'DOGS', 'Poodle', 'Intelligent and hypoallergenic breed', 'dog2.jpg'), 18.50, 'ON_SALE'),
+                                                                        ('K9-DL-01', 'DOGS', 'Dalmatian', 'Energetic spotted breed', 'dog3.jpg'), 18.50, 'ON_SALE'),
+                                                                        ('K9-PO-02', 'DOGS', 'Golden Retriever', 'Friendly and devoted family dog', 'dog4.jpg'), 18.50, 'ON_SALE'),
+                                                                        ('K9-RT-01', 'DOGS', 'Labrador Retriever', 'Most popular dog breed in America', 'dog5.jpg'), 18.50, 'ON_SALE'),
+                                                                        ('K9-RT-02', 'DOGS', 'Chihuahua', 'Tiny but mighty companion dog', 'dog6.jpg'), 18.50, 'ON_SALE'),
+                                                                        ('C9-DL-01', 'CATS', 'Amazon Parrot', 'Colorful and talkative bird', 'cat1.jpg'), 18.50, 'ON_SALE'),
+                                                                        ('C9-DL-02', 'CATS', 'Persian Cat', 'Fluffy and gentle long-haired cat', 'cat2.jpg'), 18.50, 'ON_SALE'),
+                                                                        ('C9-PO-01', 'CATS', 'Siamese Cat', 'Elegant and vocal breed', 'cat3.jpg'), 18.50, 'ON_SALE'),
+                                                                        ('C9-PO-02', 'CATS', 'Maine Coon', 'Large and friendly breed', 'cat4.jpg'), 18.50, 'ON_SALE'),
                                                                         ('RP-LI-02', 'REPTILES', 'Iguana', 'Large green lizard, popular pet', 'reptile1.jpg'),
                                                                         ('RP-SN-01', 'REPTILES', 'Rattlesnake', 'Venomous snake, for experienced keepers', 'reptile2.jpg'),
-                                                                        ('RP-SN-02', 'REPTILES', 'Ball Python', 'Docile and easy to handle snake', 'reptile3.jpg'),
-                                                                        ('AV-CB-01', 'BIRDS', 'Cockatiel', 'Friendly and musical small parrot', 'bird1.jpg'),
-                                                                        ('AV-SB-01', 'BIRDS', 'Budgerigar', 'Small colorful parakeet', 'bird2.jpg'),
+                                                                        ('RP-SN-02', 'REPTILES', 'Ball Python', 'Docile and easy to handle snake', 'reptile3.jpg'), 18.50, 'ON_SALE'),
+                                                                        ('AV-CB-01', 'BIRDS', 'Cockatiel', 'Friendly and musical small parrot', 'bird1.jpg'), 18.50, 'ON_SALE'),
+                                                                        ('AV-SB-01', 'BIRDS', 'Budgerigar', 'Small colorful parakeet', 'bird2.jpg'), 18.50, 'ON_SALE'),
                                                                         ('AV-FW-01', 'BIRDS', 'Finch', 'Small and active songbird', 'bird3.jpg');
 
--- 插入商品项数据
+-- 鎻掑叆鍟嗗搧椤规暟鎹?
 INSERT INTO item (itemid, productid, listprice, unitcost, supplier, status, attr1, attr2, attr3, attr4, attr5, qty) VALUES
                                                                                                                         ('EST-1',  'FI-SW-01', 16.50, 10.00, 1, 'P', 'Large', NULL, NULL, NULL, NULL, 10000),
                                                                                                                         ('EST-2',  'FI-SW-01', 16.50, 10.00, 1, 'P', 'Small', NULL, NULL, NULL, NULL, 10000),
@@ -243,26 +246,33 @@ INSERT INTO item (itemid, productid, listprice, unitcost, supplier, status, attr
                                                                                                                         ('EST-59', 'AV-FW-01', 18.50, 12.00, 1, 'P', 'Adult Male', NULL, NULL, NULL, NULL, 10000),
                                                                                                                         ('EST-60', 'AV-FW-01', 18.50, 12.00, 1, 'P', 'Adult Female', NULL, NULL, NULL, NULL, 10000);
 
--- 插入用户登录信息
+-- 鎻掑叆鐢ㄦ埛鐧诲綍淇℃伅
 INSERT INTO signon (username, password) VALUES
                                             ('j2ee', 'j2ee'),
                                             ('ACID', 'ACID');
 
--- 插入用户账户
-INSERT INTO account (userid, email, firstname, lastname, status, addr1, addr2, city, state, zip, country, phone) VALUES
-                                                                                                                     ('j2ee', 'j2ee@jpetstore.com', 'John', 'Doe', 'OK', '901 San Antonio Road', 'MS 100', 'Palo Alto', 'CA', '94303', 'US', '555-555-5555'),
-                                                                                                                     ('ACID', 'acid@jpetstore.com', 'Jane', 'Smith', 'OK', '100 Main Street', NULL, 'New York', 'NY', '10001', 'US', '555-123-4567');
+-- 鎻掑叆鐢ㄦ埛璐︽埛
+INSERT INTO account (userid, email, firstname, lastname, status, addr1, addr2, city, state, zip, country, phone, role) VALUES
+                                                                                                                     ('j2ee', 'j2ee@jpetstore.com', 'John', 'Doe', 'OK', '901 San Antonio Road', 'MS 100', 'Palo Alto', 'CA', '94303', 'US', '555-555-5555', 'ADMIN'),
+                                                                                                                     ('ACID', 'acid@jpetstore.com', 'Jane', 'Smith', 'OK', '100 Main Street', NULL, 'New York', 'NY', '10001', 'US', '555-123-4567', 'USER');
 
--- 插入用户资料
+-- 鎻掑叆鐢ㄦ埛璧勬枡
 INSERT INTO profile (userid, langpref, favcategory, mylistopt, banneropt) VALUES
                                                                               ('j2ee', 'english', 'DOGS', 1, 1),
                                                                               ('ACID', 'english', 'CATS', 1, 0);
 
 -- ============================================
--- 4. 验证数据
+-- 4. 楠岃瘉鏁版嵁
 -- ============================================
 SELECT 'Database setup complete!' AS message;
 SELECT COUNT(*) AS category_count FROM category;
 SELECT COUNT(*) AS product_count FROM product;
 SELECT COUNT(*) AS item_count FROM item;
 SELECT COUNT(*) AS account_count FROM account;
+
+
+
+
+
+
+

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- AI chatbot "小宠" - Floating widget -->
+<div th:fragment="chatbot">
+    <!-- Toggle Button -->
+    <button class="chatbot-toggle" id="chatbotToggle" onclick="toggleChatbot()" title="小宠 - AI智能客服">
+        🐾
+        <span class="badge d-none" id="chatbotBadge">1</span>
+    </button>
+
+    <!-- Chat Window -->
+    <div class="chatbot-window" id="chatbotWindow">
+        <div class="chatbot-header">
+            <div class="title">
+                <div class="avatar">🐾</div>
+                <div>
+                    <h6>小宠 AI 助手</h6>
+                    <small>🟢 在线 · 宠物知识+客服</small>
+                </div>
+            </div>
+            <button type="button" class="btn-close" onclick="toggleChatbot()"></button>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="chatbot-actions" id="quickActions">
+            <button class="quick-btn" onclick="sendQuickMsg('你好小宠！')">👋 打招呼</button>
+            <button class="quick-btn" onclick="sendQuickMsg('怎么养狗狗？')">🐕 养狗知识</button>
+            <button class="quick-btn" onclick="sendQuickMsg('怎么养猫咪？')">🐈 养猫知识</button>
+            <button class="quick-btn" onclick="sendQuickMsg('配送几天到？')">🚚 配送</button>
+            <button class="quick-btn" onclick="sendQuickMsg('有什么商品推荐？')">🛍️ 推荐</button>
+        </div>
+
+        <!-- Messages -->
+        <div class="chatbot-messages" id="chatbotMessages">
+            <div class="chat-message assistant">
+                <div class="chat-bubble">
+                    🐾 你好呀！我是<b>小宠</b>，你的专属宠物智能助手！🎉
+                    我可以帮你：
+                    • 🐶 解答宠物饲养知识
+                    • 🛒 推荐宠物商品
+                    • 📦 查询订单状态
+                    • 💬 回答常见问题
+
+                    有什么想问的吗？直接告诉我吧~
+                </div>
+                <span class="time">刚刚</span>
+            </div>
+        </div>
+
+        <!-- Input -->
+        <div class="chatbot-input">
+            <input type="text" id="chatbotInput" placeholder="输入你想问的问题..." 
+                   onkeypress="if(event.key==='Enter') sendMessage()">
+            <button class="send-btn" id="chatbotSendBtn" onclick="sendMessage()">
+                <i class="bi bi-send-fill"></i>
+            </button>
+        </div>
+        <div class="chatbot-footer">JPetStore AI助手 · 小宠 🐾</div>
+    </div>
+</div>
+
+<script>
+var isChatbotOpen = false;
+var isSending = false;
+
+function toggleChatbot() {
+    isChatbotOpen = !isChatbotOpen;
+    document.getElementById('chatbotWindow').classList.toggle('open', isChatbotOpen);
+    document.getElementById('chatbotBadge').classList.add('d-none');
+    if (isChatbotOpen) {
+        setTimeout(function() {
+            var msgs = document.getElementById('chatbotMessages');
+            msgs.scrollTop = msgs.scrollHeight;
+            document.getElementById('chatbotInput').focus();
+        }, 100);
+    }
+}
+
+function sendQuickMsg(msg) {
+    document.getElementById('chatbotInput').value = msg;
+    sendMessage();
+}
+
+function sendMessage() {
+    var input = document.getElementById('chatbotInput');
+    var message = input.value.trim();
+    if (!message || isSending) return;
+
+    input.value = '';
+    isSending = true;
+    document.getElementById('chatbotSendBtn').disabled = true;
+
+    // Add user message
+    addMessage('user', message);
+
+    // Show typing indicator
+    var typingDiv = document.createElement('div');
+    typingDiv.className = 'chatbot-typing';
+    typingDiv.id = 'typingIndicator';
+    typingDiv.innerHTML = '<span></span><span></span><span></span>';
+    document.getElementById('chatbotMessages').appendChild(typingDiv);
+    scrollToBottom();
+
+    // Send to API
+    var formData = new URLSearchParams();
+    formData.append('message', message);
+
+    fetch('/api/chatbot/message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString()
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        removeTyping();
+        if (data.code === 200 && data.data) {
+            addMessage('assistant', data.data.content);
+        } else {
+            addMessage('assistant', '😅 抱歉，小宠暂时有点卡，请稍后再试~');
+        }
+    })
+    .catch(function() {
+        removeTyping();
+        addMessage('assistant', '😅 网络开小差了，请稍后再试试~');
+    })
+    .finally(function() {
+        isSending = false;
+        document.getElementById('chatbotSendBtn').disabled = false;
+    });
+}
+
+function addMessage(role, content) {
+    var div = document.createElement('div');
+    div.className = 'chat-message ' + role;
+
+    var bubble = document.createElement('div');
+    bubble.className = 'chat-bubble';
+    bubble.innerHTML = content.replace(/\n/g, '<br>');
+
+    var time = document.createElement('span');
+    time.className = 'time';
+    time.textContent = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+
+    div.appendChild(bubble);
+    div.appendChild(time);
+    document.getElementById('chatbotMessages').appendChild(div);
+    scrollToBottom();
+}
+
+function removeTyping() {
+    var typing = document.getElementById('typingIndicator');
+    if (typing) typing.remove();
+}
+
+function scrollToBottom() {
+    setTimeout(function() {
+        var msgs = document.getElementById('chatbotMessages');
+        msgs.scrollTop = msgs.scrollHeight;
+    }, 50);
+}
+
+// Load history on page load
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/api/chatbot/history')
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.code === 200 && data.data && data.data.length > 0) {
+                var container = document.getElementById('chatbotMessages');
+                // Clear welcome message
+                container.innerHTML = '';
+                data.data.forEach(function(msg) {
+                    addMessage(msg.role, msg.content);
+                });
+            }
+        })
+        .catch(function() { /* silent fail */ });
+});
+</script>
+</body>
+</html>

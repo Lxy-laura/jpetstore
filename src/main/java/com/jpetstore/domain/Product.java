@@ -23,9 +23,11 @@ public class Product implements Serializable {
     private String category;
 
     @NotBlank(message = "产品名称不能为空")
-    private String name;
+   private String name;
 
-    private String description;
+    private String status = "ON_SALE";
+
+   private String description;
 
     private String image;
 
@@ -34,10 +36,4 @@ public class Product implements Serializable {
     private Category categoryObj;
     private List<Item> items;
 
-    public void setStatus(String s) {
-    }
-
-    public String getStatus() {
-        return null;
-    }
 }

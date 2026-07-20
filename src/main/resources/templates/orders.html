@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -22,7 +22,8 @@
                                 <div class="col-md-3"><div class="text-muted small">订单编号</div><div class="fw-bold fs-5" th:text="'#' + ${order.orderid}">#001</div></div>
                                 <div class="fw-bold" th:text="${#dates.format(order.orderdate, 'yyyy-MM-dd HH:mm')}">2026-01-01</div>
                                 <div class="col-md-3"><div class="text-muted small">订单金额</div><div class="fw-bold text-danger fs-5" th:text="'¥' + ${order.totalprice}">¥0.00</div></div>
-                                <div class="col-md-2"><span class="order-status" th:classappend="${'status-' + order.status}" th:text="${order.status}">状态</span></div>
+                                <div class="col-md-2"><span class="order-status" th:classappend="${'status-' + order.status}" th:text="${order.status}">状态</span>
+                            <small class="text-muted d-block" th:text="${#dates.format(order.orderdate, 'yyyy-MM-dd HH:mm')}">2026-01-01</small></div>
                                 <div class="col-md-1 text-end"><a th:href="@{'/order/' + ${order.orderid}}" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a></div>
                             </div>
                         </div>

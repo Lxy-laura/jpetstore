@@ -15,24 +15,34 @@ public class AdminInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        String path = request.getRequestURI();
         HttpSession session = request.getSession();
         Account user = (Account) session.getAttribute("user");
 
         if (user == null) {
-            response.setContentType("application/json;charset=utf-8");
-            PrintWriter out = response.getWriter();
-            out.write(new ObjectMapper().writeValueAsString(Result.unauthorized("请先登录")));
-            out.flush();
-            out.close();
+            // If it's an API request, return JSON
+            if (path.startsWith("/api/")) {
+                response.setContentType("application/json;charset=utf-8");
+                PrintWriter out = response.getWriter();
+                out.write(new ObjectMapper().writeValueAsString(Result.unauthorized("请先登录")));
+                out.flush();
+                out.close();
+            } else {
+                response.sendRedirect("/login");
+            }
             return false;
         }
 
         if (!user.isAdmin()) {
-            response.setContentType("application/json;charset=utf-8");
-            PrintWriter out = response.getWriter();
-            out.write(new ObjectMapper().writeValueAsString(Result.forbidden("需要管理员权限")));
-            out.flush();
-            out.close();
+            if (path.startsWith("/api/")) {
+                response.setContentType("application/json;charset=utf-8");
+                PrintWriter out = response.getWriter();
+                out.write(new ObjectMapper().writeValueAsString(Result.forbidden("需要管理员权限")));
+                out.flush();
+                out.close();
+            } else {
+                response.sendRedirect("/");
+            }
             return false;
         }
 
