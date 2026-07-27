@@ -9,6 +9,11 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.springframework.http.*;
+import org.springframework.web.client.RestTemplate;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 @Service
 public class ChatbotService {
@@ -21,6 +26,11 @@ public class ChatbotService {
     private ItemService itemService;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private ChatbotConfig chatbotConfig;
+
+    private final RestTemplate restTemplate = new RestTemplate();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     // ==================== Intent Recognition ====================
 
@@ -73,9 +83,58 @@ public class ChatbotService {
     // ==================== Response Generation ====================
 
     public ChatMessage generateResponse(String userMessage, List<ChatMessage> history) {
+        // Try OpenAI API first if enabled
+        if (chatbotConfig.isApiEnabled() && chatbotConfig.getApiKey() != null 
+                && !chatbotConfig.getApiKey().isEmpty()
+                && !chatbotConfig.getApiKey().equals("sk-your-api-key-here")) {
+            try {
+                return callOpenAI(userMessage, history);
+            } catch (Exception e) {
+                System.err.println("AI API error: " + e.getMessage());
+            }
+        }
+        // Fallback to rule-based response
         String intent = detectIntent(userMessage);
         String response = generateByIntent(intent, userMessage, history);
         return new ChatMessage("assistant", response);
+    }
+
+    private ChatMessage callOpenAI(String message, List<ChatMessage> history) throws JsonProcessingException {
+        String url = chatbotConfig.getApiUrl();
+        String model = chatbotConfig.getModel();
+
+        List<Map<String, String>> messages = new ArrayList<>();
+        messages.add(Map.of("role", "system", "content",
+            "You are a professional pet knowledge AI assistant for JPetStore pet shop. " +
+            "You can answer ANY pet-related questions: dog care, cat care, fish keeping, bird care, reptile care, small pets. " +
+            "Cover topics: feeding, health, vaccination, training, behavior, grooming, common diseases. " +
+            "JPetStore info: free shipping over 199 yuan, 1-2 days local delivery. 7-day return policy. " +
+            "Answer in Chinese with emoji. Keep answers concise within 200 chars. Be honest if unsure."));
+
+        int startIdx = Math.max(0, history.size() - 6);
+        for (int i = startIdx; i < history.size(); i++) {
+            ChatMessage msg = history.get(i);
+            messages.add(Map.of("role", msg.getRole(), "content", msg.getContent()));
+        }
+
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("model", model);
+        requestBody.put("messages", messages);
+        requestBody.put("temperature", 0.7);
+        requestBody.put("max_tokens", 500);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(chatbotConfig.getApiKey());
+
+        HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(requestBody), headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+
+        JsonNode root = objectMapper.readTree(response.getBody());
+        String reply = root.path("choices").get(0).path("message").path("content").asText();
+
+        return new ChatMessage("assistant", reply);
     }
 
     private String generateByIntent(String intent, String message, List<ChatMessage> history) {

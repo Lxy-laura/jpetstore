@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link th:href="@{/css/chatbot.css}" rel="stylesheet">
 </head>
 <body>
 <nav th:replace="~{fragments/header :: header}"></nav>
@@ -22,14 +23,22 @@
         <div th:if="${product != null}">
             <div class="row g-4">
                 <div class="col-md-5">
-                    <div class="bg-light rounded-4 d-flex align-items-center justify-content-center" style="height: 400px;">
-                        <i class="bi bi-image text-muted" style="font-size: 5rem;"></i>
+                    <div class="bg-light rounded-4 d-flex align-items-center justify-content-center overflow-hidden" style="height: 400px;">
+                        <img th:if="${product.image != null}" th:src="${product.image}" alt="${product.name}" style="width:100%;height:100%;object-fit:contain;" class="p-3">
+                        <i th:unless="${product.image != null}" class="bi bi-image text-muted" style="font-size: 5rem;"></i>
+                    </div>
+                    <div class="d-flex gap-2 mt-2" th:if="${product.image != null}">
+                        <button class="btn btn-sm btn-outline-primary" onclick="window.open('@{${product.image}}', '_blank')"><i class="bi bi-arrows-angle-expand"></i> 查看大图</button>
                     </div>
                 </div>
                 <div class="col-md-7">
                     <div class="product-detail-info">
                         <span class="badge bg-primary mb-3 px-3 py-2" th:text="${product.category}">分类</span>
                         <h2 th:text="${product.name}">商品名称</h2>
+                        <div class="d-flex align-items-center gap-3 my-3">
+                            <span class="price" th:text="'¥' + ${product.price}">¥0.00</span>
+                            <span class="badge" th:classappend="${product.status == 'ON_SALE'} ? 'bg-success' : 'bg-secondary'" th:text="${product.status == 'ON_SALE'} ? '在售' : '已下架'">状态</span>
+                        </div>
                         <p class="text-muted mt-3" th:text="${product.description}">商品描述</p>
                         <hr class="my-4">
                         <h5 class="fw-bold mb-3"><i class="bi bi-list-check me-2"></i>可选规格</h5>
@@ -45,15 +54,10 @@
                                         <span class="badge" th:classappend="${item.qty > 0} ? 'bg-success' : 'bg-danger'" th:text="${item.qty > 0} ? '有货 (' + ${item.qty} + ')' : '缺货'">库存</span>
                                     </td>
                                     <td>
-                                        <form th:action="@{/api/cart/add}" method="post" class="d-inline" th:if="${item.qty > 0}">
-                                            <input type="hidden" name="itemId" th:value="${item.itemid}">
-                                            <button type="submit" class="btn btn-sm btn-gradient"><i class="bi bi-cart-plus me-1"></i>加入购物车</button>
-                                        </form>
-                                        <form th:action="@{/api/cart/add}" method="post" class="d-inline ms-1" th:if="${item.qty > 0}">
-                                            <input type="hidden" name="itemId" th:value="${item.itemid}">
-                                            <input type="hidden" name="redirect" value="cart">
-                                            <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-bag-check me-1"></i>立即购买</button>
-                                        </form>
+                                        <div th:if="${item.qty > 0}" class="d-flex gap-1">
+                                            <button class="btn btn-sm btn-gradient" onclick="addToCart('${item.itemid}')"><i class="bi bi-cart-plus me-1"></i>加入购物车</button>
+                                            <button class="btn btn-sm btn-danger" onclick="buyNow('${item.itemid}')"><i class="bi bi-bag-check me-1"></i>立即购买</button>
+                                        </div>
                                         <button class="btn btn-sm btn-outline-secondary disabled" th:if="${item.qty <= 0}">缺货</button>
                                     </td>
                                 </tr>
@@ -66,6 +70,25 @@
                     </div>
                 </div>
             </div>
+            <!-- Related Products -->
+            <section class="mt-5" th:if="${relatedProducts != null and !#lists.isEmpty(relatedProducts)}">
+                <h3 class="page-title"><i class="bi bi-link me-2"></i>相关推荐</h3>
+                <div class="row g-4">
+                    <div class="col-md-6 col-lg-3" th:each="rp : ${relatedProducts}">
+                        <div class="card product-card">
+                            <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 160px;">
+                                <img th:if="${rp.image != null}" th:src="${rp.image}" style="width:100%;height:100%;object-fit:cover;" th:alt="${rp.name}">
+                                <i th:unless="${rp.image != null}" class="bi bi-image text-muted" style="font-size: 2.5rem;"></i>
+                            </div>
+                            <div class="card-body p-3">
+                                <h6 class="card-title" th:text="${rp.name}">商品名</h6>
+                                <span class="text-danger fw-bold" th:text="'¥' + ${rp.price}">¥0.00</span>
+                                <a th:href="@{'/product/' + ${rp.productid}}" class="btn btn-sm btn-outline-primary float-end">查看</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
         <div class="empty-state" th:if="${product == null}">
             <i class="bi bi-exclamation-triangle d-block"></i>
@@ -74,28 +97,81 @@
             <a th:href="@{/}" class="btn btn-gradient"><i class="bi bi-arrow-left me-1"></i>返回首页</a>
         </div>
     </div>
-        <!-- Related Products -->
-        <section class="mt-5" th:if="${relatedProducts != null and !#lists.isEmpty(relatedProducts)}">
-            <h3 class="page-title"><i class="bi bi-link me-2"></i>相关推荐</h3>
-            <div class="row g-4">
-                <div class="col-md-6 col-lg-3" th:each="rp : ${relatedProducts}">
-                    <div class="card product-card">
-                        <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 160px;">
-                            <img th:if="${rp.image != null}" th:src="${rp.image}" style="width:100%;height:100%;object-fit:cover;" th:alt="${rp.name}">
-                            <i th:unless="${rp.image != null}" class="bi bi-image text-muted" style="font-size: 2.5rem;"></i>
-                        </div>
-                        <div class="card-body p-3">
-                            <h6 class="card-title" th:text="${rp.name}">商品名</h6>
-                            <span class="text-danger fw-bold" th:text="'\u00a5' + ${rp.price}">\u00a50.00</span>
-                            <a th:href="@{'/product/' + ${rp.productid}}" class="btn btn-sm btn-outline-primary float-end">\u67e5\u770b</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
 </main>
 <footer th:replace="~{fragments/header :: footer}"></footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <div th:replace="~{fragments/chatbot :: chatbot}"></div>
+<!-- Toast Container -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 99999">
+    <div id="cartToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="cartToastMessage">
+                ✅ 已成功添加到购物车！
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+    <div id="errorToast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="errorToastMessage">❌ 操作失败，请重试</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+<script>
+function addToCart(itemId) {
+    var formData = new URLSearchParams();
+    formData.append('itemId', itemId);
+    fetch('/api/cart/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString()
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.code === 200) {
+            document.getElementById('cartToastMessage').textContent = '✅ 已成功添加到购物车！';
+            var toast = new bootstrap.Toast(document.getElementById('cartToast'));
+            toast.show();
+            // Update cart badge if exists
+            var badge = document.getElementById('cartCountBadge');
+            if (badge && data.data && data.data.itemCount !== undefined) {
+                badge.textContent = data.data.itemCount;
+                if (data.data.itemCount > 0) {
+                    badge.classList.remove('d-none');
+                }
+            }
+        } else {
+            showError(data.message || '添加失败');
+        }
+    })
+    .catch(function() { showError('网络错误，请重试'); });
+}
+
+function buyNow(itemId) {
+    var formData = new URLSearchParams();
+    formData.append('itemId', itemId);
+    fetch('/api/cart/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString()
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.code === 200) {
+            window.location.href = '/payment';
+        } else {
+            showError(data.message || '操作失败');
+        }
+    })
+    .catch(function() { showError('网络错误，请重试'); });
+}
+
+function showError(msg) {
+    document.getElementById('errorToastMessage').textContent = '❌ ' + msg;
+    var toast = new bootstrap.Toast(document.getElementById('errorToast'));
+    toast.show();
+}
+</script>
 </body>
 </html>

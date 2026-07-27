@@ -12,31 +12,151 @@
 <body>
 <nav th:replace="~{fragments/header :: header}"></nav>
 <main>
-    <div class="hero-banner">
-        <div class="container">
-            <h1><i class="bi bi-paw-fill me-3"></i>欢迎来到 JPetStore</h1>
-            <p class="mt-3">您值得信赖的宠物用品电商平台，为爱宠提供最好的商品和服务</p>
-            <a th:href="@{/category/DOGS}" class="btn btn-light btn-lg mt-3 px-5 rounded-pill fw-bold">
-                <i class="bi bi-arrow-right-circle me-2"></i>立即选购
-            </a>
+    <!-- Hero Carousel Section - 精美轮播 -->
+    <div id="heroCarousel" class="carousel slide carousel-fade mb-5" data-bs-ride="carousel" data-bs-interval="5000">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
         </div>
+        <div class="carousel-inner rounded-4 overflow-hidden shadow-lg position-relative" style="max-height: 480px;">
+            <!-- Decorative overlay patterns -->
+            <div class="carousel-overlay"></div>
+            <div class="carousel-particles"></div>
+            
+            <div class="carousel-item active" th:each="banner, stat : ${banners}">
+                <div class="hero-slide" th:data-index="${stat.index}" style="min-height: 380px;">
+                    <!-- Animated background shapes -->
+                    <div class="slide-shape shape-1"></div>
+                    <div class="slide-shape shape-2"></div>
+                    <div class="slide-shape shape-3"></div>
+                    <div class="container h-100">
+                        <div class="row h-100 align-items-center">
+                            <div class="col-lg-7 text-white py-5 position-relative">
+                                <div class="slide-content">
+                                    <div class="slide-tag" th:if="${stat.first}">🏆 精选推荐</div>
+                                    <div class="slide-tag" th:unless="${stat.first}">🐾 宠物优选</div>
+                                    <h1 class="display-4 fw-bold slide-title" th:text="${banner.title}">欢迎来到 JPetStore</h1>
+                                    <p class="lead mt-3 mb-4 slide-subtitle" th:text="${banner.subtitle}">您值得信赖的宠物用品电商平台</p>
+                                    <a th:href="${banner.link != null} ? @{${banner.link}} : @{/explore}" class="btn btn-light btn-lg rounded-pill px-5 fw-bold shadow-sm slide-cta">
+                                        <i class="bi bi-arrow-right-circle me-2"></i>立即探索
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-lg-5 text-center d-none d-lg-block">
+                                <div class="hero-image-wrapper">
+                                    <img th:if="${banner.image != null}" th:src="${banner.image}" class="img-fluid rounded-3 hero-image" alt="${banner.title}">
+                                    <div th:unless="${banner.image != null}" class="hero-emoji-display">
+                                        <span class="hero-emoji">🐾</span>
+                                        <div class="emoji-ring"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="carousel-control-prev carousel-btn" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <span class="control-icon"><i class="bi bi-chevron-left"></i></span>
+            <span class="visually-hidden">上一页</span>
+        </button>
+        <button class="carousel-control-next carousel-btn" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <span class="control-icon"><i class="bi bi-chevron-right"></i></span>
+            <span class="visually-hidden">下一页</span>
+        </button>
     </div>
+
     <div class="container">
+        <!-- Features Bar -->
+        <div class="row g-3 mb-5">
+            <div class="col-md-3 col-6">
+                <div class="card border-0 shadow-sm rounded-4 text-center py-3 h-100 feature-card">
+                    <div class="card-body">
+                        <i class="bi bi-truck text-primary" style="font-size: 2rem;"></i>
+                        <h6 class="mt-2 mb-0 fw-bold">满199包邮</h6>
+                        <small class="text-muted">全国配送</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card border-0 shadow-sm rounded-4 text-center py-3 h-100 feature-card">
+                    <div class="card-body">
+                        <i class="bi bi-shield-check text-success" style="font-size: 2rem;"></i>
+                        <h6 class="mt-2 mb-0 fw-bold">正品保障</h6>
+                        <small class="text-muted">品质保证</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card border-0 shadow-sm rounded-4 text-center py-3 h-100 feature-card">
+                    <div class="card-body">
+                        <i class="bi bi-arrow-return-left text-warning" style="font-size: 2rem;"></i>
+                        <h6 class="mt-2 mb-0 fw-bold">7天退换</h6>
+                        <small class="text-muted">无忧购物</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card border-0 shadow-sm rounded-4 text-center py-3 h-100 feature-card">
+                    <div class="card-body">
+                        <i class="bi bi-chat-heart text-danger" style="font-size: 2rem;"></i>
+                        <h6 class="mt-2 mb-0 fw-bold">AI 客服</h6>
+                        <small class="text-muted">小宠在线</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pet Gallery -->
+        <section class="mb-5 animate-on-scroll">
+            <h2 class="page-title text-center"><i class="bi bi-camera me-2"></i>萌宠画廊</h2>
+            <p class="text-center text-muted mb-4">可爱宠物风采展示</p>
+            <div class="pet-gallery">
+                <div class="pet-gallery-item" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <div class="gallery-img">🐕</div>
+                    <div class="gallery-overlay"><span class="gallery-label">狗狗专区</span></div>
+                </div>
+                <div class="pet-gallery-item" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <div class="gallery-img">🐈</div>
+                    <div class="gallery-overlay"><span class="gallery-label">猫咪专区</span></div>
+                </div>
+                <div class="pet-gallery-item" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    <div class="gallery-img">🐟</div>
+                    <div class="gallery-overlay"><span class="gallery-label">鱼类专区</span></div>
+                </div>
+                <div class="pet-gallery-item" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                    <div class="gallery-img">🐦</div>
+                    <div class="gallery-overlay"><span class="gallery-label">鸟类专区</span></div>
+                </div>
+                <div class="pet-gallery-item" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                    <div class="gallery-img">🦎</div>
+                    <div class="gallery-overlay"><span class="gallery-label">爬宠专区</span></div>
+                </div>
+                <div class="pet-gallery-item" style="background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);">
+                    <div class="gallery-img">🐹</div>
+                    <div class="gallery-overlay"><span class="gallery-label">小宠专区</span></div>
+                </div>
+            </div>
+        </section>
+        <!-- Categories Section -->
         <section class="mb-5">
             <h2 class="page-title text-center"><i class="bi bi-grid-3x3-gap-fill me-2"></i>商品分类</h2>
+            <p class="text-center text-muted mb-4">选择你感兴趣的宠物分类，发现更多好物</p>
             <div class="row g-4">
                 <div class="col-md-4 col-lg-2" th:each="category : ${categories}">
                     <a th:href="@{'/category/' + ${category.catid}}" class="text-decoration-none">
                         <div class="card category-card">
                             <div class="card-body">
                                 <span class="category-icon" th:switch="${category.catid}">
-                                    <span th:case="'FISH'" style="font-size: 4rem;">🐟</span>
-                                    <span th:case="'DOGS'" style="font-size: 4rem;">🐕</span>
-                                    <span th:case="'CATS'" style="font-size: 4rem;">🐈</span>
-                                    <span th:case="'REPTILES'" style="font-size: 4rem;">🦎</span>
-                                    <span th:case="'BIRDS'" style="font-size: 4rem;">🐦</span>
-                                    <span th:case="'Pet snacks'" style="font-size: 4rem;">🍪</span>
-                                    <span th:case="*" style="font-size: 4rem;">📦</span>
+                                    <span th:case="'FISH'" style="font-size: 3.5rem;">🐟</span>
+                                    <span th:case="'DOGS'" style="font-size: 3.5rem;">🐕</span>
+                                    <span th:case="'CATS'" style="font-size: 3.5rem;">🐈</span>
+                                    <span th:case="'REPTILES'" style="font-size: 3.5rem;">🦎</span>
+                                    <span th:case="'BIRDS'" style="font-size: 3.5rem;">🐦</span>
+                                    <span th:case="'SNACKS'" style="font-size: 3.5rem;">🍪</span>
+                                    <span th:case="'SUPPLIES'" style="font-size: 3.5rem;">📦</span>
+                                    <span th:case="*" style="font-size: 3.5rem;">📦</span>
                                 </span>
                                 <h5 class="card-title" th:text="${category.name}">分类名称</h5>
                                 <p class="card-text" th:text="${category.description}">分类描述</p>
@@ -46,46 +166,105 @@
                 </div>
             </div>
         </section>
+
+        <!-- Recommended Products -->
         <section class="mb-5 recommend-section">
             <h2 class="page-title text-center"><i class="bi bi-star-fill me-2"></i>猜你喜欢</h2>
+            <p class="text-center text-muted mb-4">根据您的浏览记录，为您精选推荐</p>
             <div class="row g-4">
                 <div class="col-md-6 col-lg-3" th:each="product : ${recommendations}">
                     <div class="card product-card">
-                        <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 180px;">
-                            <img th:if="${product.image != null}" th:src="${product.image}" style="width:100%;height:100%;object-fit:cover;" alt="${product.name}">
-                            <i th:unless="${product.image != null}" class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                        <div class="card-img-top d-flex align-items-center justify-content-center bg-light position-relative" style="height: 180px;">
+                            <img th:if="${product.image}" th:src="${product.image}" style="width:100%;height:100%;object-fit:cover;" th:alt="${product.name}">
+                            <i th:unless="${product.image}" class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                            <span class="badge bg-danger position-absolute top-0 end-0 m-2" th:if="${product.status == 'ON_SALE'}"><i class="bi bi-fire"></i> 热卖</span>
                         </div>
                         <div class="card-body">
                             <span class="badge bg-primary badge-category mb-2" th:text="${product.category}">分类</span>
                             <h6 class="card-title" th:text="${product.name}">商品名称</h6>
                             <p class="card-text text-muted small" th:text="${#strings.abbreviate(product.description, 40)}">商品描述</p>
-                            <a th:href="@{'/product/' + ${product.productid}}" class="btn btn-sm btn-gradient w-100">
-                                <i class="bi bi-eye me-1"></i>查看详情
-                            </a>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="price" th:text="'¥' + ${product.price}">¥0.00</span>
+                                <a th:href="@{'/product/' + ${product.productid}}" class="btn btn-sm btn-gradient">
+                                    <i class="bi bi-eye me-1"></i>查看详情
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="text-center mt-3" th:if="${#lists.isEmpty(recommendations)}">
-                <p class="text-muted">浏览更多商品，小宠为你推荐好物~</p>
+            <div class="text-center mt-4" th:if="${#lists.isEmpty(recommendations)}">
+                <p class="text-muted">浏览更多商品，小宠为你推荐好物~ 🐾</p>
             </div>
         </section>
+
+        <!-- Pet Tips -->
         <section class="mb-5">
-            <h2 class="page-title text-center"><i class="bi bi-star-fill me-2"></i>全部商品</h2>
+            <h2 class="page-title text-center"><i class="bi bi-bookmark-heart me-2"></i>宠物知识小贴士</h2>
+            <p class="text-center text-muted mb-4">每天一个养宠小知识</p>
+            <div class="tips-carousel" id="tipsCarousel">
+                <div class="tip-item active" data-index="0">
+                    <div class="tip-icon">🐕</div>
+                    <div class="tip-content">
+                        <h5>🐾 幼犬喂养指南</h5>
+                        <p>幼犬每日喂食3-4餐，少食多餐。选择高蛋白幼犬粮，用温水泡软后喂食。确保随时有清洁饮水，8周前不要带出门。</p>
+                    </div>
+                </div>
+                <div class="tip-item" data-index="1">
+                    <div class="tip-icon">🐈</div>
+                    <div class="tip-content">
+                        <h5>🐾 猫咪饮水小技巧</h5>
+                        <p>猫咪天生不爱喝水，容易导致尿路疾病。建议使用宠物流动饮水机，或在多处放置水碗。</p>
+                    </div>
+                </div>
+                <div class="tip-item" data-index="2">
+                    <div class="tip-icon">🐟</div>
+                    <div class="tip-content">
+                        <h5>🐾 新鱼入缸步骤</h5>
+                        <p>新鱼到家后，将鱼袋浮在鱼缸中15-20分钟适应水温，然后每隔10分钟加入少量缸水，重复3-4次后再将鱼放入。</p>
+                    </div>
+                </div>
+                <div class="tip-item" data-index="3">
+                    <div class="tip-icon">🐦</div>
+                    <div class="tip-content">
+                        <h5>🐾 鹦鹉说话训练</h5>
+                        <p>每天固定时间重复简单的词语，用零食奖励。虎皮鹦鹉学话能力强，玄凤鹦鹉擅长吹口哨。</p>
+                    </div>
+                </div>
+                <div class="tip-dots" id="tipDots">
+                    <button class="tip-dot active" onclick="showTip(0)"></button>
+                    <button class="tip-dot" onclick="showTip(1)"></button>
+                    <button class="tip-dot" onclick="showTip(2)"></button>
+                    <button class="tip-dot" onclick="showTip(3)"></button>
+                </div>
+            </div>
+        </section>
+        <!-- All Products -->
+        <section class="mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="page-title mb-0"><i class="bi bi-box-seam me-2"></i>全部商品</h2>
+                <span class="badge bg-primary rounded-pill fs-6" th:text="${#lists.size(products)} + ' 件商品'"></span>
+            </div>
             <div class="row g-4">
                 <div class="col-md-6 col-lg-4 col-xl-3" th:each="product : ${products}">
                     <div class="card product-card">
-                        <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 200px;">
-                            <img th:if="${product.image != null}" th:src="${product.image}" class="w-full h-full object-cover" alt="${product.name}">
-                            <i th:unless="${product.image != null}" class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                        <div class="card-img-top d-flex align-items-center justify-content-center bg-light position-relative" style="height: 200px;">
+                            <img th:if="${product.image}" th:src="${product.image}" style="width:100%;height:100%;object-fit:cover;" th:alt="${product.name}">
+                            <i th:unless="${product.image}" class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                            <div class="position-absolute top-0 start-0 m-2">
+                                <span class="badge" th:classappend="${product.status == 'ON_SALE'} ? 'bg-success' : 'bg-secondary'" th:text="${product.status == 'ON_SALE'} ? '在售' : '已下架'">在售</span>
+                            </div>
                         </div>
                         <div class="card-body">
                             <span class="badge bg-primary badge-category mb-2" th:text="${product.category}">分类</span>
                             <h5 class="card-title" th:text="${product.name}">商品名称</h5>
                             <p class="card-text text-muted small" th:text="${#strings.abbreviate(product.description, 50)}">商品描述</p>
-                            <a th:href="@{'/product/' + ${product.productid}}" class="btn btn-gradient w-100">
-                                <i class="bi bi-eye me-1"></i>查看详情
-                            </a>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <span class="price" th:text="'¥' + ${product.price}">¥0.00</span>
+                                <a th:href="@{'/product/' + ${product.productid}}" class="btn btn-sm btn-gradient">
+                                    <i class="bi bi-eye me-1"></i>查看详情
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -100,5 +279,38 @@
 </main>
 <footer th:replace="~{fragments/header :: footer}"></footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Pet tips carousel
+var tipInterval = null;
+var currentTip = 0;
+var totalTips = 4;
+
+function showTip(index) {
+    currentTip = index;
+    document.querySelectorAll('.tip-item').forEach(function(el, i) {
+        el.classList.toggle('active', i === index);
+    });
+    document.querySelectorAll('.tip-dot').forEach(function(el, i) {
+        el.classList.toggle('active', i === index);
+    });
+    resetTipTimer();
+}
+
+function resetTipTimer() {
+    if (tipInterval) clearInterval(tipInterval);
+    tipInterval = setInterval(function() {
+        currentTip = (currentTip + 1) % totalTips;
+        showTip(currentTip);
+    }, 6000);
+}
+
+// Start auto-rotation when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    tipInterval = setInterval(function() {
+        currentTip = (currentTip + 1) % totalTips;
+        showTip(currentTip);
+    }, 6000);
+});
+</script>
 </body>
 </html>

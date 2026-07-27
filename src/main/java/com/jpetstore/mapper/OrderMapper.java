@@ -1,5 +1,4 @@
-package com.jpetstore.mapper;
-
+﻿import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jpetstore.domain.Order;
 import com.jpetstore.domain.OrderItem;
 import com.jpetstore.domain.OrderStatus;
@@ -9,23 +8,20 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 @Mapper
-public interface OrderMapper {
-
-    int insertOrder(Order order);
-
-    Order getOrderById(@Param("orderid") Integer orderid);
-
-    List<Order> getOrdersByUserId(@Param("userid") String userid);
+public interface OrderMapper extends BaseMapper<Order> {
 
     List<Order> getAllOrders();
 
-    int insertOrderItem(OrderItem orderItem);
+    List<Order> getOrdersByUserId(String userid);
 
-    List<OrderItem> getOrderItemsByOrderId(@Param("orderid") Integer orderid);
+    Order getOrderById(Integer orderid);
 
-    int insertOrderStatus(OrderStatus orderStatus);
+    List<OrderItem> getOrderItemsByOrderId(Integer orderid);
 
-    List<OrderStatus> getOrderStatusByOrderId(@Param("orderid") Integer orderid);
+    int insertOrderItem(OrderItem item);
+
+    int insertOrderStatus(OrderStatus status);
 
     int updateOrderStatus(@Param("orderid") Integer orderid, @Param("status") String status);
 }
+

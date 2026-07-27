@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -86,7 +86,7 @@
             .then(function(res) { return res.json(); }).then(function(data) { if (data.code === 200) { window.location.href = '/orders'; } else { alert(data.message); } })
             .catch(function() { alert('网络错误，请重试'); });
     });
-    var sessionUser = '';
+    var sessionUser = document.querySelector('[data-userid]') ? document.querySelector('[data-userid]').dataset.userid : '';
 </script>
 </body>
 </html>

@@ -1,25 +1,18 @@
-package com.jpetstore.mapper;
-
+﻿import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jpetstore.domain.Item;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
 @Mapper
-public interface ItemMapper {
+public interface ItemMapper extends BaseMapper<Item> {
 
-    List<Item> getItemsByProductId(@Param("productid") String productid);
+    @Select("SELECT * FROM item WHERE productid = #{productid}")
+    List<Item> getItemsByProductId(String productid);
 
-    Item getItemById(@Param("itemid") String itemid);
-
-    List<Item> getAllItems();
-
+    @Update("UPDATE item SET qty = #{quantity} WHERE itemid = #{itemid}")
     int updateInventory(@Param("itemid") String itemid, @Param("quantity") int quantity);
-
-    int insertItem(Item item);
-
-    int updateItem(Item item);
-
-    int deleteItem(@Param("itemid") String itemid);
 }

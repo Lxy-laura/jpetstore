@@ -1,6 +1,9 @@
-package com.jpetstore.domain;
+﻿package com.jpetstore.domain;
 
 import lombok.Data;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
@@ -12,6 +15,7 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@TableName("lineitem")
 public class OrderItem implements Serializable {
 
     private static final long serialVersionUID = 1L;

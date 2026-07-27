@@ -1,6 +1,9 @@
-package com.jpetstore.domain;
+﻿package com.jpetstore.domain;
 
 import lombok.Data;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.util.*;
@@ -8,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Data
 @NoArgsConstructor
+@TableName("wishlist")
 public class Wishlist implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -41,3 +45,4 @@ public class Wishlist implements Serializable {
         return productMap.isEmpty();
     }
 }
+
