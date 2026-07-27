@@ -1,4 +1,4 @@
-﻿package com.jpetstore.domain;
+package com.jpetstore.domain;
 
 import lombok.Data;
 import com.baomidou.mybatisplus.annotation.TableField;

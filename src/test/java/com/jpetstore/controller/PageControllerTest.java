@@ -10,6 +10,7 @@ import com.jpetstore.domain.Product;
 import com.jpetstore.service.AccountService;
 import com.jpetstore.service.CategoryService;
 import com.jpetstore.service.ItemService;
+import com.jpetstore.service.RecommendationService;
 import com.jpetstore.service.OrderService;
 import com.jpetstore.service.ProductService;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,6 +44,8 @@ class PageControllerTest {
     private ItemService itemService;
     @MockitoBean
     private AccountService accountService;
+    @MockitoBean
+    private RecommendationService recommendationService;
     @MockitoBean
     private OrderService orderService;
 

@@ -1,4 +1,4 @@
-﻿package com.jpetstore.common;
+package com.jpetstore.common;
 
 import com.jpetstore.domain.Account;
 import com.fasterxml.jackson.databind.ObjectMapper;

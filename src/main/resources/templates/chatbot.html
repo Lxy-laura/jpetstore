@@ -1,0 +1,632 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小宠 AI 助手 - JPetStore</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: #343541;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: #202123;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 14px;
+            border-bottom: 1px solid #2e2f33;
+        }
+
+        .sidebar-header .new-chat-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #4d4d4f;
+            background: transparent;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.2s;
+        }
+        .sidebar-header .new-chat-btn:hover { background: #2e2f33; }
+
+        .sidebar-history {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        .sidebar-history .history-item {
+            padding: 10px 12px;
+            border-radius: 6px;
+            color: #ececf1;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.2s;
+            margin-bottom: 2px;
+        }
+        .sidebar-history .history-item:hover { background: #2e2f33; }
+        .sidebar-history .history-item i { color: #8e8ea0; font-size: 16px; }
+
+        .sidebar-footer {
+            padding: 10px;
+            border-top: 1px solid #2e2f33;
+        }
+
+        .sidebar-footer .back-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 6px;
+            color: #ececf1;
+            font-size: 13px;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .sidebar-footer .back-link:hover { background: #2e2f33; }
+
+        /* Main Chat Area */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: #343541;
+        }
+
+        .chat-header {
+            padding: 12px 20px;
+            border-bottom: 1px solid #2e2f33;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .chat-header .header-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ececf1;
+        }
+
+        .chat-header .header-info svg { width: 28px; height: 28px; }
+
+        .chat-header .header-info h5 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .chat-header .header-info span {
+            font-size: 12px;
+            color: #8e8ea0;
+        }
+
+        /* Messages */
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        .message-row {
+            padding: 24px 0;
+            border-bottom: 1px solid #2e2f33;
+        }
+        .message-row.user { background: #343541; }
+        .message-row.assistant { background: #444654; }
+
+        .message-content {
+            max-width: 768px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            gap: 16px;
+        }
+
+        .message-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .message-avatar.user { background: #5436da; color: white; }
+        .message-avatar.assistant { background: #10a37f; color: white; }
+
+        .message-text {
+            color: #ececf1;
+            font-size: 15px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            padding-top: 5px;
+        }
+        .message-text p { margin-bottom: 8px; }
+        .message-text ul { padding-left: 20px; margin-bottom: 8px; }
+
+        /* Welcome Screen */
+        .welcome-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 24px;
+            text-align: center;
+        }
+
+        .welcome-screen .welcome-icon {
+            margin-bottom: 20px;
+        }
+        .welcome-screen .welcome-icon svg { width: 80px; height: 80px; }
+
+        .welcome-screen h1 {
+            color: #ececf1;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .welcome-screen p {
+            color: #8e8ea0;
+            font-size: 14px;
+            margin-bottom: 32px;
+        }
+
+        .welcome-suggestions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .suggestion-card {
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid #4d4d4f;
+            background: transparent;
+            color: #ececf1;
+            cursor: pointer;
+            text-align: left;
+            transition: background 0.2s;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .suggestion-card:hover { background: #2e2f33; }
+        .suggestion-card .suggestion-icon { font-size: 24px; margin-bottom: 8px; display: block; }
+        .suggestion-card .suggestion-title { font-weight: 600; margin-bottom: 4px; }
+        .suggestion-card .suggestion-desc { color: #8e8ea0; font-size: 12px; }
+
+        /* Input Area */
+        .input-area {
+            padding: 16px 24px 24px;
+            background: #343541;
+        }
+
+        .input-container {
+            max-width: 768px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            background: #40414f;
+            border-radius: 12px;
+            padding: 8px;
+            border: 1px solid #4d4d4f;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .input-wrapper:focus-within {
+            border-color: #8e8ea0;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        }
+
+        .input-wrapper textarea {
+            flex: 1;
+            border: none;
+            background: transparent;
+            color: #ececf1;
+            font-size: 15px;
+            padding: 8px 12px;
+            resize: none;
+            outline: none;
+            max-height: 200px;
+            line-height: 1.5;
+            font-family: inherit;
+        }
+        .input-wrapper textarea::placeholder { color: #8e8ea0; }
+
+        .input-wrapper .send-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: none;
+            background: #19c37d;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .input-wrapper .send-btn:hover { background: #1a7f5a; }
+        .input-wrapper .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .disclaimer {
+            text-align: center;
+            color: #8e8ea0;
+            font-size: 11px;
+            margin-top: 10px;
+            padding: 0 20px;
+        }
+
+        /* Typing indicator */
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 2px 0;
+        }
+        .typing-indicator span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #8e8ea0;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-4px); }
+        }
+
+        /* Scrollbar */
+        .messages-container::-webkit-scrollbar, .sidebar-history::-webkit-scrollbar {
+            width: 6px;
+        }
+        .messages-container::-webkit-scrollbar-track, .sidebar-history::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .messages-container::-webkit-scrollbar-thumb, .sidebar-history::-webkit-scrollbar-thumb {
+            background: #565869;
+            border-radius: 3px;
+        }
+        .messages-container::-webkit-scrollbar-thumb:hover, .sidebar-history::-webkit-scrollbar-thumb:hover {
+            background: #8e8ea0;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .welcome-suggestions { grid-template-columns: 1fr; }
+            .message-content { padding: 0 16px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <button class="new-chat-btn" onclick="clearHistory()">
+                <i class="bi bi-plus-lg"></i>
+                新对话
+            </button>
+        </div>
+        <div class="sidebar-history" id="sidebarHistory">
+            <div class="history-item">
+                <i class="bi bi-chat-dots"></i>
+                <span>当前对话</span>
+            </div>
+        </div>
+        <div class="sidebar-footer">
+            <a th:href="@{/}" class="back-link">
+                <i class="bi bi-arrow-left"></i>
+                返回商店
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Chat Area -->
+    <div class="chat-area">
+        <div class="chat-header">
+            <div class="header-info">
+                <svg viewBox="0 0 100 100" width="28" height="28">
+                    <circle cx="50" cy="50" r="40" fill="#FFB347"/>
+                    <ellipse cx="50" cy="55" rx="25" ry="20" fill="#FFD699"/>
+                    <polygon points="30,30 35,12 42,28" fill="#FFB347"/>
+                    <polygon points="33,28 36,18 40,28" fill="#FFB3B3"/>
+                    <polygon points="58,28 65,12 70,30" fill="#FFB347"/>
+                    <polygon points="60,28 63,18 68,28" fill="#FFB3B3"/>
+                    <ellipse cx="40" cy="48" rx="5" ry="6" fill="white"/>
+                    <ellipse cx="60" cy="48" rx="5" ry="6" fill="white"/>
+                    <ellipse cx="41.5" cy="48" rx="3" ry="4.5" fill="#333"/>
+                    <ellipse cx="58.5" cy="48" rx="3" ry="4.5" fill="#333"/>
+                    <ellipse cx="50" cy="58" rx="2.5" ry="2" fill="#FF6B8A"/>
+                    <path d="M46 62 Q50 67 54 62" fill="none" stroke="#666" stroke-width="1.2"/>
+                </svg>
+                <div>
+                    <h5>小宠 AI 助手</h5>
+                    <span>🟢 在线 · 宠物知识+客服</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="messages-container" id="messagesContainer">
+            <!-- Welcome Screen -->
+            <div class="welcome-screen" id="welcomeScreen">
+                <div class="welcome-icon">
+                    <svg viewBox="0 0 100 100" width="80" height="80">
+                        <circle cx="50" cy="50" r="40" fill="#FFB347"/>
+                        <ellipse cx="50" cy="55" rx="25" ry="20" fill="#FFD699"/>
+                        <polygon points="30,30 35,12 42,28" fill="#FFB347"/>
+                        <polygon points="33,28 36,18 40,28" fill="#FFB3B3"/>
+                        <polygon points="58,28 65,12 70,30" fill="#FFB347"/>
+                        <polygon points="60,28 63,18 68,28" fill="#FFB3B3"/>
+                        <ellipse cx="40" cy="48" rx="5" ry="6" fill="white"/>
+                        <ellipse cx="60" cy="48" rx="5" ry="6" fill="white"/>
+                        <ellipse cx="41.5" cy="48" rx="3" ry="4.5" fill="#333"/>
+                        <ellipse cx="58.5" cy="48" rx="3" ry="4.5" fill="#333"/>
+                        <ellipse cx="50" cy="58" rx="2.5" ry="2" fill="#FF6B8A"/>
+                        <path d="M46 62 Q50 67 54 62" fill="none" stroke="#666" stroke-width="1.2"/>
+                    </svg>
+                </div>
+                <h1>🐾 你好呀！</h1>
+                <p>我是小宠 AI 助手，有什么可以帮助你的吗？</p>
+                <div class="welcome-suggestions">
+                    <button class="suggestion-card" onclick="sendQuickMessage('你好小宠！')">
+                        <span class="suggestion-icon">👋</span>
+                        <div class="suggestion-title">打个招呼</div>
+                        <div class="suggestion-desc">和猫咪助手打个招呼吧</div>
+                    </button>
+                    <button class="suggestion-card" onclick="sendQuickMessage('狗狗怎么养？')">
+                        <span class="suggestion-icon">🐕</span>
+                        <div class="suggestion-title">养狗知识</div>
+                        <div class="suggestion-desc">了解狗狗饲养技巧</div>
+                    </button>
+                    <button class="suggestion-card" onclick="sendQuickMessage('有什么商品推荐？')">
+                        <span class="suggestion-icon">🛍️</span>
+                        <div class="suggestion-title">商品推荐</div>
+                        <div class="suggestion-desc">看看有什么好物推荐</div>
+                    </button>
+                    <button class="suggestion-card" onclick="sendQuickMessage('配送政策是怎样的？')">
+                        <span class="suggestion-icon">🚚</span>
+                        <div class="suggestion-title">配送政策</div>
+                        <div class="suggestion-desc">了解配送和售后</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input -->
+        <div class="input-area">
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <textarea id="chatInput" rows="1" placeholder="🐾 有什么想问小宠的？..." 
+                        oninput="autoResize(this)" 
+                        onkeydown="handleKeyDown(event)"></textarea>
+                    <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                        <i class="bi bi-send-fill"></i>
+                    </button>
+                </div>
+                <div class="disclaimer">
+                    🐾 小宠 AI 助手 · 基于知识库和AI技术 · 回答仅供参考
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var isSending = false;
+        var messageCount = 0;
+        
+        // Load history on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadHistory();
+        });
+
+        function loadHistory() {
+            fetch('/api/chatbot/history')
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    if (data.code === 200 && data.data && data.data.length > 0) {
+                        // Hide welcome screen
+                        document.getElementById('welcomeScreen').style.display = 'none';
+                        data.data.forEach(function(msg) {
+                            addMessage(msg.role, msg.content, false);
+                        });
+                        messageCount = data.data.length;
+                    }
+                })
+                .catch(function() { /* silent fail */ });
+        }
+
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
+        }
+
+        function handleKeyDown(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function sendQuickMessage(text) {
+            document.getElementById('chatInput').value = text;
+            sendMessage();
+        }
+
+        function sendMessage() {
+            var input = document.getElementById('chatInput');
+            var message = input.value.trim();
+            if (!message || isSending) return;
+
+            var sendBtn = document.getElementById('sendBtn');
+            input.value = '';
+            input.style.height = 'auto';
+            isSending = true;
+            sendBtn.disabled = true;
+
+            // Hide welcome screen
+            document.getElementById('welcomeScreen').style.display = 'none';
+
+            // Add user message
+            addMessage('user', message, true);
+
+            // Show typing indicator
+            showTyping();
+            messageCount++;
+
+            // Scroll to bottom
+            scrollToBottom();
+
+            // Send to API
+            var formData = new URLSearchParams();
+            formData.append('message', message);
+
+            fetch('/api/chatbot/message', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData.toString()
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                removeTyping();
+                if (data.code === 200 && data.data) {
+                    addMessage('assistant', data.data.content, true);
+                    messageCount++;
+                } else {
+                addMessage('assistant', '😅 小宠暂时有点卡，请稍后再试~', true);
+                }
+            })
+            .catch(function() {
+                removeTyping();
+                addMessage('assistant', '😅 网络开小差了，请稍后再试试~', true);
+            })
+            .finally(function() {
+                isSending = false;
+                sendBtn.disabled = false;
+                scrollToBottom();
+            });
+        }
+
+        function addMessage(role, content, isNew) {
+            var container = document.getElementById('messagesContainer');
+            
+            // Check if assistant message already exists
+            if (!isNew) {
+                var existingMessages = container.querySelectorAll('.message-row');
+                for (var i = 0; i < existingMessages.length; i++) {
+                    var textEl = existingMessages[i].querySelector('.message-text');
+                    if (textEl && textEl.textContent === content) {
+                        return; // Skip duplicate
+                    }
+                }
+            }
+
+            var row = document.createElement('div');
+            row.className = 'message-row ' + role;
+
+            var contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+
+            var avatar = document.createElement('div');
+            avatar.className = 'message-avatar ' + role;
+            avatar.textContent = role === 'user' ? 'U' : '🐱';
+
+            var text = document.createElement('div');
+            text.className = 'message-text';
+            text.innerHTML = content.replace(/\n/g, '<br>');
+
+            contentDiv.appendChild(avatar);
+            contentDiv.appendChild(text);
+            row.appendChild(contentDiv);
+            container.appendChild(row);
+
+            scrollToBottom();
+        }
+
+        function showTyping() {
+            removeTyping();
+            var container = document.getElementById('messagesContainer');
+            var row = document.createElement('div');
+            row.className = 'message-row assistant';
+            row.id = 'typingRow';
+
+            var contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+
+            var avatar = document.createElement('div');
+            avatar.className = 'message-avatar assistant';
+            avatar.textContent = '🐱';
+
+            var text = document.createElement('div');
+            text.className = 'message-text';
+            text.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+
+            contentDiv.appendChild(avatar);
+            contentDiv.appendChild(text);
+            row.appendChild(contentDiv);
+            container.appendChild(row);
+        }
+
+        function removeTyping() {
+            var typing = document.getElementById('typingRow');
+            if (typing) typing.remove();
+        }
+
+        function scrollToBottom() {
+            setTimeout(function() {
+                var container = document.getElementById('messagesContainer');
+                container.scrollTop = container.scrollHeight;
+            }, 50);
+        }
+
+        function clearHistory() {
+            fetch('/api/chatbot/clear', { method: 'POST' })
+                .then(function() {
+                    var container = document.getElementById('messagesContainer');
+                    // Remove all message rows
+                    container.querySelectorAll('.message-row').forEach(function(el) { el.remove(); });
+                    // Show welcome screen
+                    document.getElementById('welcomeScreen').style.display = 'flex';
+                    messageCount = 0;
+                });
+        }
+    </script>
+</body>
+</html>

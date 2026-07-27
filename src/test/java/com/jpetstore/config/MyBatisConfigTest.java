@@ -3,10 +3,10 @@ package com.jpetstore.config;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-class MyBatisConfigTest {
+class MyBatisPlusConfigTest {
     @Test
     void testInstantiation() {
-        MyBatisConfig config = new MyBatisConfig();
+        MyBatisPlusConfig config = new MyBatisPlusConfig();
         assertNotNull(config);
     }
 }

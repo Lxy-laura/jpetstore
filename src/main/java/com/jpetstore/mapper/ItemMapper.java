@@ -1,4 +1,6 @@
-﻿import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+package com.jpetstore.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jpetstore.domain.Item;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -15,4 +17,10 @@ public interface ItemMapper extends BaseMapper<Item> {
 
     @Update("UPDATE item SET qty = #{quantity} WHERE itemid = #{itemid}")
     int updateInventory(@Param("itemid") String itemid, @Param("quantity") int quantity);
+    
+    default Item getItemById(String itemid) { return selectById(itemid); }
+    default List<Item> getAllItems() { return selectList(null); }
+    default int insertItem(Item item) { return insert(item); }
+    default int updateItem(Item item) { return updateById(item); }
+    default int deleteItem(String itemid) { return deleteById(itemid); }
 }

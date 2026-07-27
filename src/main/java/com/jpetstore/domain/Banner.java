@@ -7,20 +7,23 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
-import jakarta.validation.constraints.NotBlank;
+import java.io.Serial;
 import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("signon")
-public class SignOn implements Serializable {
-
+@TableName("banner")
+public class Banner implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
-    @NotBlank(message = "用户名不能为空")
-    private String username;
-
-    @NotBlank(message = "密码不能为空")
-    private String password;
+    private Integer id;
+    private String title;
+    private String subtitle;
+    private String image;
+    private String link;
+    private Integer sortOrder;
+    private Boolean active;
 }
+

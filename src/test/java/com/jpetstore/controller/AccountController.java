@@ -5,6 +5,8 @@ import com.jpetstore.domain.Profile;
 import com.jpetstore.domain.SignOn;
 import com.jpetstore.mapper.AccountMapper;
 import com.jpetstore.service.AccountService;
+import com.jpetstore.service.RecommendationService;
+import com.jpetstore.common.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -30,6 +32,10 @@ class AccountControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @MockitoBean
+    private JwtUtil jwtUtil;
+    @MockitoBean
+    private RecommendationService recommendationService;
     @MockitoBean
     private AccountService accountService;
 

@@ -2,7 +2,11 @@ package com.jpetstore.controller;
 
 import com.jpetstore.domain.Item;
 import com.jpetstore.domain.Product;
+import com.jpetstore.common.JwtUtil;
+import com.jpetstore.service.RecommendationService;
 import com.jpetstore.service.ItemService;
+import com.jpetstore.common.JwtUtil;
+import com.jpetstore.service.RecommendationService;
 import com.jpetstore.service.ProductService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +36,8 @@ class ProductControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @MockitoBean
+    private JwtUtil jwtUtil;
     @MockitoBean
     private ProductService productService;
 

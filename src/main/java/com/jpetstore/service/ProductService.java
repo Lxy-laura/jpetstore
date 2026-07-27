@@ -1,4 +1,4 @@
-﻿package com.jpetstore.service;
+package com.jpetstore.service;
 
 import com.jpetstore.domain.Product;
 import com.jpetstore.mapper.ProductMapper;

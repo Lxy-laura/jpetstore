@@ -1,0 +1,2 @@
+﻿    @Autowired private RecommendationService recommendationService;
+    @Autowired private BannerService bannerService;

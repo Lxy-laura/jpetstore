@@ -1,4 +1,4 @@
-﻿package com.jpetstore.controller;
+package com.jpetstore.controller;
 
 import com.jpetstore.common.JwtUtil;
 import com.jpetstore.common.Result;

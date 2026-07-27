@@ -1,4 +1,6 @@
-﻿package com.jpetstore.mapper;
+package com.jpetstore.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 import com.jpetstore.domain.Account;
 import com.jpetstore.domain.Profile;
@@ -63,4 +65,7 @@ public interface AccountMapper extends BaseMapper<Account> {
      * 删除登录信息
      */
     int deleteSignOn(@Param("username") String username);
+    
+    default List<Account> getAllUsers() { return selectList(null); }
+    default int insertAccount(Account account) { return insert(account); }
 }

@@ -1,4 +1,6 @@
-﻿import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+package com.jpetstore.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jpetstore.domain.Order;
 import com.jpetstore.domain.OrderItem;
 import com.jpetstore.domain.OrderStatus;
@@ -23,5 +25,8 @@ public interface OrderMapper extends BaseMapper<Order> {
     int insertOrderStatus(OrderStatus status);
 
     int updateOrderStatus(@Param("orderid") Integer orderid, @Param("status") String status);
+    
+    default int insertOrder(Order order) { return insert(order); }
+    List<OrderStatus> getOrderStatusByOrderId(Integer orderid);
 }
 
