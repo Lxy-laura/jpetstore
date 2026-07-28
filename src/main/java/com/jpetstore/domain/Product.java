@@ -27,18 +27,19 @@ public class Product implements Serializable {
     private String category;
 
     @NotBlank(message = "产品名称不能为空")
-   private String name;
+    private String name;
 
     private String status = "ON_SALE";
 
-   private String description;
+    private String description;
 
     private String image;
 
     private BigDecimal price;
 
+    @TableField(exist = false)
     private Category categoryObj;
+
+    @TableField(exist = false)
     private List<Item> items;
-
 }
-

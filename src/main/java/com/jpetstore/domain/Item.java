@@ -20,6 +20,7 @@ public class Item implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableId
     @NotBlank(message = "商品项ID不能为空")
     private String itemid;
 
@@ -43,5 +44,6 @@ public class Item implements Serializable {
     @Min(value = 0, message = "库存数量不能为负数")
     private Integer qty;
 
+    @TableField(exist = false)
     private Product product;
 }
