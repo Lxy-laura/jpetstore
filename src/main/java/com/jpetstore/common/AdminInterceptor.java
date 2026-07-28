@@ -15,7 +15,14 @@ public class AdminInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String path = request.getRequestURI();
+        if (path == null) path = "";
         Account user = (Account) request.getAttribute("currentUser");
+        if (user == null) {
+            jakarta.servlet.http.HttpSession session = request.getSession(false);
+            if (session != null) {
+                user = (Account) session.getAttribute("user");
+            }
+        }
 
         if (user == null) {
             if (path.startsWith("/api/")) {

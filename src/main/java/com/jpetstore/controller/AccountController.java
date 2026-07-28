@@ -32,7 +32,7 @@ public class AccountController {
     @PostMapping("/register")
     public Result<String> register(@Valid @RequestBody Account account) {
         boolean success = accountService.register(account);
-        if (success) return Result.success("注册成功");
+        if (success) return Result.success("注册成功", "注册成功");
         return Result.error(500, "注册失败");
     }
 
@@ -65,6 +65,6 @@ public class AccountController {
 
     @PostMapping("/logout")
     public Result<String> logout() {
-        return Result.success("登出成功");
+        return Result.success("登出成功", "登出成功");
     }
 }
