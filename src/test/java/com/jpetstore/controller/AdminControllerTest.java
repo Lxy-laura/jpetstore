@@ -1,6 +1,8 @@
 package com.jpetstore.controller;
 
 import com.jpetstore.domain.*;
+import com.jpetstore.common.JwtUtil;
+import com.jpetstore.service.RecommendationService;
 import com.jpetstore.service.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,6 +28,8 @@ class AdminControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @MockitoBean
+    private JwtUtil jwtUtil;
     @MockitoBean
     private CategoryService categoryService;
     @MockitoBean
@@ -58,13 +62,14 @@ class AdminControllerTest {
     }
 
     // ==================== Auth Tests ====================
-    // Note: AdminInterceptor is NOT loaded in @WebMvcTest, so these expect 200
+    // AdminInterceptor 已被加载,未登录/非管理员将被拦截
 
     @Test
     void testAccessAdminApiWithoutLogin() throws Exception {
         mockMvc.perform(get("/api/admin/categories"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(200));
+                .andExpect(jsonPath("$.code").value(401))
+                .andExpect(jsonPath("$.message").value("请先登录"));
     }
 
     @Test
@@ -75,7 +80,8 @@ class AdminControllerTest {
         mockMvc.perform(get("/api/admin/categories")
                         .session(session))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(200));
+                .andExpect(jsonPath("$.code").value(403))
+                .andExpect(jsonPath("$.message").value("需要管理员权限"));
     }
 
     // ==================== Category Management ====================

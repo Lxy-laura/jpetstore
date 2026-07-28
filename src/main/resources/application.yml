@@ -1,4 +1,4 @@
-spring:
+﻿spring:
   application:
     name: jpetstore-test
 
@@ -12,7 +12,11 @@ spring:
     init:
       mode: never
 
-mybatis:
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: auto
+      table-underline: true
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.jpetstore.domain
   configuration:
@@ -21,3 +25,16 @@ mybatis:
 logging:
   level:
     com.jpetstore.mapper: debug
+
+# AI Chatbot Configuration
+chatbot:
+  api:
+    enabled: true
+    url: https://api.openai.com/v1/chat/completions
+    key: sk-bd945e4b9b1f4e9791b29390b14aff0e
+    model: gpt-3.5-turbo
+
+# JWT Configuration
+jwt:
+  secret: jpetstore-secret-key-change-in-production-2026
+  expiration: 86400000

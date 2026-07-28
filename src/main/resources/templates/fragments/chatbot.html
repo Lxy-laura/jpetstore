@@ -1,0 +1,281 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+ <!-- AI chatbot "小宠" - 智能宠物助手浮标 -->
+<div th:fragment="chatbot">
+    <!-- Toggle Button - Cute Kitten -->
+     <a href="javascript:void(0)" class="chatbot-toggle" id="chatbotToggleBtn" title="小宠 - AI智能助手">
+        <div class="kitten-avatar">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <!-- Cat Body -->
+                <circle cx="50" cy="55" r="40" fill="#FFB347"/>
+                <!-- Inner face -->
+                <ellipse cx="50" cy="60" rx="28" ry="24" fill="#FFD699"/>
+                <!-- Left Ear -->
+                <polygon points="22,30 28,8 38,25" fill="#FFB347" stroke="#E89630" stroke-width="1"/>
+                <polygon points="26,28 30,14 36,25" fill="#FFB3B3"/>
+                <!-- Right Ear -->
+                <polygon points="62,25 72,8 78,30" fill="#FFB347" stroke="#E89630" stroke-width="1"/>
+                <polygon points="64,25 70,14 76,28" fill="#FFB3B3"/>
+                <!-- Eyes -->
+                <ellipse cx="38" cy="52" rx="6" ry="7" fill="white"/>
+                <ellipse cx="62" cy="52" rx="6" ry="7" fill="white"/>
+                <ellipse cx="40" cy="52" rx="3.5" ry="5.5" fill="#333"/>
+                <ellipse cx="60" cy="52" rx="3.5" ry="5.5" fill="#333"/>
+                <circle cx="42" cy="49" r="1.5" fill="white"/>
+                <circle cx="58" cy="49" r="1.5" fill="white"/>
+                <!-- Nose -->
+                <ellipse cx="50" cy="62" rx="3" ry="2.5" fill="#FF6B8A"/>
+                <!-- Mouth -->
+                <path d="M45 66 Q50 72 55 66" fill="none" stroke="#666" stroke-width="1.5" stroke-linecap="round"/>
+                <!-- Whiskers -->
+                <line x1="18" y1="58" x2="35" y2="62" stroke="#999" stroke-width="1.2" stroke-linecap="round"/>
+                <line x1="18" y1="65" x2="35" y2="65" stroke="#999" stroke-width="1.2" stroke-linecap="round"/>
+                <line x1="65" y1="62" x2="82" y2="58" stroke="#999" stroke-width="1.2" stroke-linecap="round"/>
+                <line x1="65" y1="65" x2="82" y2="65" stroke="#999" stroke-width="1.2" stroke-linecap="round"/>
+                <!-- Blush -->
+                <ellipse cx="32" cy="66" rx="5" ry="3" fill="#FFB3B3" opacity="0.6"/>
+                <ellipse cx="68" cy="66" rx="5" ry="3" fill="#FFB3B3" opacity="0.6"/>
+                <!-- Paws -->
+                <ellipse cx="30" cy="88" rx="10" ry="7" fill="#FFB347"/>
+                <ellipse cx="70" cy="88" rx="10" ry="7" fill="#FFB347"/>
+                <!-- Paw details -->
+                <ellipse cx="27" cy="86" rx="3" ry="2" fill="#FFD699"/>
+                <ellipse cx="33" cy="86" rx="3" ry="2" fill="#FFD699"/>
+                <ellipse cx="67" cy="86" rx="3" ry="2" fill="#FFD699"/>
+                <ellipse cx="73" cy="86" rx="3" ry="2" fill="#FFD699"/>
+                <!-- Sparkle -->
+                <text x="72" y="30" font-size="18" fill="#FFD700" opacity="0.8">✦</text>
+                <text x="18" y="18" font-size="12" fill="#FFD700" opacity="0.6">✦</text>
+            </svg>
+        </div>
+        <span class="badge d-none" id="chatbotBadge">1</span>
+        <span class="status-dot"></span>
+        <span class="pet-label">小宠 AI 助手<small>🟢 在线 · 随时服务</small></span>
+    </a>
+
+    <!-- Chat Window -->
+    <div class="chatbot-window" id="chatbotWindow">
+        <div class="chatbot-header">
+            <div class="title">
+                <div class="avatar">
+                    <svg viewBox="0 0 100 100" width="40" height="40">
+                        <circle cx="50" cy="50" r="40" fill="#FFB347"/>
+                        <ellipse cx="50" cy="55" rx="25" ry="20" fill="#FFD699"/>
+                        <polygon points="30,30 35,12 42,28" fill="#FFB347"/>
+                        <polygon points="33,28 36,18 40,28" fill="#FFB3B3"/>
+                        <polygon points="58,28 65,12 70,30" fill="#FFB347"/>
+                        <polygon points="60,28 63,18 68,28" fill="#FFB3B3"/>
+                        <ellipse cx="40" cy="48" rx="5" ry="6" fill="white"/>
+                        <ellipse cx="60" cy="48" rx="5" ry="6" fill="white"/>
+                        <ellipse cx="41.5" cy="48" rx="3" ry="4.5" fill="#333"/>
+                        <ellipse cx="58.5" cy="48" rx="3" ry="4.5" fill="#333"/>
+                        <ellipse cx="50" cy="58" rx="2.5" ry="2" fill="#FF6B8A"/>
+                        <path d="M46 62 Q50 67 54 62" fill="none" stroke="#666" stroke-width="1.2"/>
+                    </svg>
+                </div>
+                <div>
+                    <h6>🐾 小宠 AI 助手</h6>
+                    <small>🟢 在线 · 宠物知识+客服</small>
+                </div>
+            </div>
+            <button type="button" class="btn-close" onclick="toggleChatbot()"></button>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="chatbot-actions" id="quickActions">
+            <button class="quick-btn" onclick="sendQuickMsg('你好小宠！')">👋 打招呼</button>
+            <button class="quick-btn" onclick="sendQuickMsg('怎么养狗狗？')">🐕 养狗知识</button>
+            <button class="quick-btn" onclick="sendQuickMsg('怎么养猫咪？')">🐈 养猫知识</button>
+            <button class="quick-btn" onclick="sendQuickMsg('配送几天到？')">🚚 配送</button>
+            <button class="quick-btn" onclick="sendQuickMsg('有什么商品推荐？')">🛍️ 推荐</button>
+        </div>
+
+        <!-- Messages -->
+        <div class="chatbot-messages" id="chatbotMessages">
+            <div class="chat-message assistant">
+                <div class="chat-bubble">
+                    🐾 哈喽~ 你好呀！我是<b>小宠</b>，你的专属宠物智能助手！🎉
+                    我可以帮你：
+                    • 🐶 解答宠物饲养知识
+                    • 🛒 推荐宠物商品
+                    • 📦 查询订单状态
+                    • 💬 回答常见问题
+
+                    有什么想问我的吗？喵~ 🐾
+                </div>
+                <span class="time">刚刚</span>
+            </div>
+        </div>
+
+        <!-- Input -->
+        <div class="chatbot-input">
+            <input type="text" id="chatbotInput" placeholder="喵~ 有什么想问我的？..." 
+                   onkeypress="if(event.key==='Enter') sendMessage()">
+            <button class="send-btn" id="chatbotSendBtn" onclick="sendMessage()">
+                <i class="bi bi-send-fill"></i>
+            </button>
+        </div>
+        <div class="chatbot-footer">
+    <span>🐾 小宠 AI 智能助手</span>
+    <a th:href="@{/chatbot}" class="fullscreen-link" target="_blank" title="打开全屏聊天">
+        <i class="bi bi-arrows-fullscreen"></i> 全屏模式
+    </a>
+</div>
+    </div>
+
+    <!-- Paws decoration on chat window -->
+    <div class="kitten-paw-print paw-1">🐾</div>
+    <div class="kitten-paw-print paw-2">🐾</div>
+    <style>
+/* Sparkle animation around kitten */
+@keyframes sparkle {
+    0%, 100% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
+.chatbot-toggle .kitten-avatar .sparkle-1 { animation: sparkle 2s ease-in-out infinite; }
+.chatbot-toggle .kitten-avatar .sparkle-2 { animation: sparkle 2s ease-in-out 0.5s infinite; }
+</style>
+    <script>
+var isChatbotOpen = false;
+var isSending = false;
+
+document.addEventListener('DOMContentLoaded', function() {
+    var toggleBtn = document.getElementById('chatbotToggleBtn');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Ripple effect
+            var rect = toggleBtn.getBoundingClientRect();
+            var ripple = document.createElement('span');
+            ripple.className = 'ripple-effect';
+            var size = Math.max(rect.width, rect.height);
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+            ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+            toggleBtn.appendChild(ripple);
+            setTimeout(function() { ripple.remove(); }, 600);
+            toggleChatbot();
+        });
+    }
+});
+
+function toggleChatbot() {
+    isChatbotOpen = !isChatbotOpen;
+    document.getElementById('chatbotWindow').classList.toggle('open', isChatbotOpen);
+    var toggle = document.getElementById('chatbotToggleBtn');
+    if (toggle) toggle.classList.toggle('active', isChatbotOpen);
+    document.getElementById('chatbotBadge').classList.add('d-none');
+    if (isChatbotOpen) {
+        setTimeout(function() {
+            var msgs = document.getElementById('chatbotMessages');
+            msgs.scrollTop = msgs.scrollHeight;
+            document.getElementById('chatbotInput').focus();
+        }, 100);
+    }
+}
+
+function sendQuickMsg(msg) {
+    document.getElementById('chatbotInput').value = msg;
+    sendMessage();
+}
+
+function sendMessage() {
+    var input = document.getElementById('chatbotInput');
+    var message = input.value.trim();
+    if (!message || isSending) return;
+
+    input.value = '';
+    isSending = true;
+    document.getElementById('chatbotSendBtn').disabled = true;
+
+    // Add user message
+    addMessage('user', message);
+
+    // Show typing indicator
+    var typingDiv = document.createElement('div');
+    typingDiv.className = 'chatbot-typing';
+    typingDiv.id = 'typingIndicator';
+    typingDiv.innerHTML = '<span></span><span></span><span></span>';
+    document.getElementById('chatbotMessages').appendChild(typingDiv);
+    scrollToBottom();
+
+    // Send to API
+    var formData = new URLSearchParams();
+    formData.append('message', message);
+
+    fetch('/api/chatbot/message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString()
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        removeTyping();
+        if (data.code === 200 && data.data) {
+            addMessage('assistant', data.data.content);
+        } else {
+            addMessage('assistant', '😅 小宠暂时有点卡，请稍后再试~');
+        }
+    })
+    .catch(function() {
+        removeTyping();
+        addMessage('assistant', '😅 喵~ 网络开小差了，请稍后再试试~');
+    })
+    .finally(function() {
+        isSending = false;
+        document.getElementById('chatbotSendBtn').disabled = false;
+    });
+}
+
+function addMessage(role, content) {
+    var div = document.createElement('div');
+    div.className = 'chat-message ' + role;
+
+    var bubble = document.createElement('div');
+    bubble.className = 'chat-bubble';
+    bubble.innerHTML = content.replace(/\n/g, '<br>');
+
+    var time = document.createElement('span');
+    time.className = 'time';
+    time.textContent = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+
+    div.appendChild(bubble);
+    div.appendChild(time);
+    document.getElementById('chatbotMessages').appendChild(div);
+    scrollToBottom();
+}
+
+function removeTyping() {
+    var typing = document.getElementById('typingIndicator');
+    if (typing) typing.remove();
+}
+
+function scrollToBottom() {
+    setTimeout(function() {
+        var msgs = document.getElementById('chatbotMessages');
+        msgs.scrollTop = msgs.scrollHeight;
+    }, 50);
+}
+
+// Load history on page load
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/api/chatbot/history')
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.code === 200 && data.data && data.data.length > 0) {
+                var container = document.getElementById('chatbotMessages');
+                container.innerHTML = '';
+                data.data.forEach(function(msg) {
+                    addMessage(msg.role, msg.content);
+                });
+            }
+        })
+        .catch(function() { /* silent fail */ });
+});
+</script>
+</div>
+
+
+</body>
+</html>

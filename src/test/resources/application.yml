@@ -13,7 +13,7 @@ spring:
       mode: always
       schema-locations: classpath:schema-h2.sql
 
-mybatis:
+mybatis-plus:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.jpetstore.domain
   configuration:
@@ -22,3 +22,7 @@ mybatis:
 logging:
   level:
     com.jpetstore.mapper: debug
+# JWT Configuration
+jwt:
+  secret: jpetstore-secret-key-change-in-production-2026
+  expiration: 86400000

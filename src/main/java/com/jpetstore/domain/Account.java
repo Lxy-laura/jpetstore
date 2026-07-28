@@ -1,14 +1,19 @@
 package com.jpetstore.domain;
 
 import lombok.Data;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 @Data
+@TableName("account")
 public class Account implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    @TableId
     private String userid;
     @NotBlank(message = "??????")
     @Email(message = "???????")
@@ -30,7 +35,9 @@ public class Account implements Serializable {
     private String phone;
     private String role;
 
+    @TableField(exist = false)
     private SignOn signOn;
+    @TableField(exist = false)
     private Profile profile;
 
     public boolean isAdmin() {

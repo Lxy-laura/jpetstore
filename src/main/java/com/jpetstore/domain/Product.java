@@ -1,6 +1,9 @@
 package com.jpetstore.domain;
 
 import lombok.Data;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
@@ -12,6 +15,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@TableName("product")
 public class Product implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -25,19 +29,17 @@ public class Product implements Serializable {
     @NotBlank(message = "产品名称不能为空")
     private String name;
 
+    private String status = "ON_SALE";
+
     private String description;
 
     private String image;
 
     private BigDecimal price;
 
+    @TableField(exist = false)
     private Category categoryObj;
+
+    @TableField(exist = false)
     private List<Item> items;
-
-    public void setStatus(String s) {
-    }
-
-    public String getStatus() {
-        return null;
-    }
 }

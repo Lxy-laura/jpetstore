@@ -6,9 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestAttribute;
 
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 public class PageController {
@@ -18,11 +20,14 @@ public class PageController {
     @Autowired private ItemService itemService;
     @Autowired private AccountService accountService;
     @Autowired private OrderService orderService;
+    @Autowired private RecommendationService recommendationService;
 
     @GetMapping("/")
-    public String index(Model model) {
+    public String index(Model model, HttpSession session) {
         model.addAttribute("categories", categoryService.getAllCategories());
         model.addAttribute("products", productService.getAllProducts());
+        model.addAttribute("recommendations", recommendationService.getRecommendations(session, 8));
+        model.addAttribute("recentViews", recommendationService.getRecentViews(session));
         return "index";
     }
 
@@ -34,13 +39,38 @@ public class PageController {
     }
 
     @GetMapping("/product/{productid}")
-    public String product(@PathVariable String productid, Model model) {
+    public String product(@PathVariable String productid, Model model, HttpSession session) {
         Product product = productService.getProductById(productid);
         if (product != null) {
             product.setItems(itemService.getItemsByProductId(productid));
+            recommendationService.recordView(session, product);
+            model.addAttribute("relatedProducts", recommendationService.getRelatedProducts(productid, 4));
         }
         model.addAttribute("product", product);
         return "product";
+    }
+
+    @GetMapping("/explore")
+    public String explorePage(Model model, HttpSession session) {
+        // Get all products
+        List<Product> allProducts = productService.getAllProducts();
+        
+        // Get personalized recommendations (limit 8)
+        List<Product> recommended = recommendationService.getRecommendations(session, 8);
+        Set<String> recommendedIds = recommended.stream()
+                .map(Product::getProductid)
+                .collect(java.util.stream.Collectors.toSet());
+        
+        // Remaining products (exclude those already in recommended)
+        List<Product> remaining = allProducts.stream()
+                .filter(p -> !recommendedIds.contains(p.getProductid()))
+                .collect(java.util.stream.Collectors.toList());
+        
+        model.addAttribute("recommendations", recommended);
+        model.addAttribute("products", remaining);
+        model.addAttribute("totalCount", allProducts.size());
+        model.addAttribute("recentViews", recommendationService.getRecentViews(session));
+        return "explore";
     }
 
     @GetMapping("/login") public String loginPage() { return "login"; }
@@ -116,9 +146,12 @@ public class PageController {
     /**
      * 退出登录（页面路由）
      */
-    @GetMapping("/logout")
+    @RequestMapping(value = "/logout", method = {RequestMethod.GET, RequestMethod.POST})
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/login";
     }
 }
+
+
+

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+﻿<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jpetstore.mapper.AccountMapper">
@@ -52,63 +52,14 @@
         WHERE s.username = #{username} AND s.password = #{password}
     </select>
 
-    <select id="getAllUsers" resultMap="accountResultMap">
-        SELECT a.userid, a.email, a.firstname, a.lastname, a.status,
-               a.addr1, a.addr2, a.city, a.state, a.zip, a.country, a.phone, a.role,
-               p.langpref, p.favcategory, p.mylistopt, p.banneropt,
-               s.username, s.password
-        FROM account a
-                 LEFT JOIN profile p ON a.userid = p.userid
-                 LEFT JOIN signon s ON a.userid = s.username
-        ORDER BY a.userid
-    </select>
 
-    <insert id="insertAccount" parameterType="com.jpetstore.domain.Account">
-        INSERT INTO account (userid, email, firstname, lastname, status,
-                             addr1, addr2, city, state, zip, country, phone, role)
-        VALUES (#{userid}, #{email}, #{firstname}, #{lastname}, #{status},
-                #{addr1}, #{addr2}, #{city}, #{state}, #{zip}, #{country}, #{phone}, #{role})
-    </insert>
 
-    <update id="updateAccount" parameterType="com.jpetstore.domain.Account">
-        UPDATE account
-        SET email = #{email}, firstname = #{firstname}, lastname = #{lastname},
-            status = #{status}, addr1 = #{addr1}, addr2 = #{addr2},
-            city = #{city}, state = #{state}, zip = #{zip}, country = #{country}, phone = #{phone},
-            role = #{role}
-        WHERE userid = #{userid}
-    </update>
 
-    <delete id="deleteAccount">
-        DELETE FROM account WHERE userid = #{userid}
-    </delete>
 
-    <insert id="insertProfile" parameterType="com.jpetstore.domain.Profile">
-        INSERT INTO profile (userid, langpref, favcategory, mylistopt, banneropt)
-        VALUES (#{userid}, #{langpref}, #{favcategory}, #{mylistopt}, #{banneropt})
-    </insert>
 
-    <update id="updateProfile" parameterType="com.jpetstore.domain.Profile">
-        UPDATE profile
-        SET langpref = #{langpref}, favcategory = #{favcategory},
-            mylistopt = #{mylistopt}, banneropt = #{banneropt}
-        WHERE userid = #{userid}
-    </update>
 
-    <delete id="deleteProfile">
-        DELETE FROM profile WHERE userid = #{userid}
-    </delete>
 
-    <insert id="insertSignOn" parameterType="com.jpetstore.domain.SignOn">
-        INSERT INTO signon (username, password) VALUES (#{username}, #{password})
-    </insert>
 
-    <update id="updateSignOn" parameterType="com.jpetstore.domain.SignOn">
-        UPDATE signon SET password = #{password} WHERE username = #{username}
-    </update>
 
-    <delete id="deleteSignOn">
-        DELETE FROM signon WHERE username = #{username}
-    </delete>
 
 </mapper>

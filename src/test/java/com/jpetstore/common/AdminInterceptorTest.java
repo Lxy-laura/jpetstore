@@ -8,8 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -22,29 +20,27 @@ class AdminInterceptorTest {
 
     @Test
     void testNoUserInSession() throws Exception {
-        when(request.getSession()).thenReturn(session);
+        when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(null);
-        when(response.getWriter()).thenReturn(new PrintWriter(new StringWriter()));
         assertFalse(interceptor.preHandle(request, response, new Object()));
-        verify(response).setContentType("application/json;charset=utf-8");
+        verify(response).sendRedirect("/login");
     }
 
     @Test
     void testUserNotAdmin() throws Exception {
         Account user = new Account();
         user.setRole("USER");
-        when(request.getSession()).thenReturn(session);
+        when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
-        when(response.getWriter()).thenReturn(new PrintWriter(new StringWriter()));
         assertFalse(interceptor.preHandle(request, response, new Object()));
-        verify(response).setContentType("application/json;charset=utf-8");
+        verify(response).sendRedirect("/");
     }
 
     @Test
     void testAdminUser() throws Exception {
         Account user = new Account();
         user.setRole("ADMIN");
-        when(request.getSession()).thenReturn(session);
+        when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
         assertTrue(interceptor.preHandle(request, response, new Object()));
     }

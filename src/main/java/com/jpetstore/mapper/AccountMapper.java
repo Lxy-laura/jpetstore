@@ -1,5 +1,7 @@
 package com.jpetstore.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
 import com.jpetstore.domain.Account;
 import com.jpetstore.domain.Profile;
 import com.jpetstore.domain.SignOn;
@@ -12,7 +14,7 @@ import java.util.List;
  * 用户账户Mapper接口
  */
 @Mapper
-public interface AccountMapper {
+public interface AccountMapper extends BaseMapper<Account> {
 
     /**
      * 根据用户名获取账户
@@ -23,16 +25,6 @@ public interface AccountMapper {
      * 根据用户名和密码获取账户
      */
     Account getAccountByUsernameAndPassword(@Param("username") String username, @Param("password") String password);
-
-    /**
-     * 获取所有用户
-     */
-    List<Account> getAllUsers();
-
-    /**
-     * 插入账户
-     */
-    int insertAccount(Account account);
 
     /**
      * 更新账户
@@ -73,4 +65,7 @@ public interface AccountMapper {
      * 删除登录信息
      */
     int deleteSignOn(@Param("username") String username);
+    
+    default List<Account> getAllUsers() { return selectList(null); }
+    default int insertAccount(Account account) { return insert(account); }
 }

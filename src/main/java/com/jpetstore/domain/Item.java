@@ -1,6 +1,9 @@
 package com.jpetstore.domain;
 
 import lombok.Data;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
@@ -12,10 +15,12 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@TableName("item")
 public class Item implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableId
     @NotBlank(message = "商品项ID不能为空")
     private String itemid;
 
@@ -39,5 +44,6 @@ public class Item implements Serializable {
     @Min(value = 0, message = "库存数量不能为负数")
     private Integer qty;
 
+    @TableField(exist = false)
     private Product product;
 }

@@ -1,0 +1,504 @@
+/* ===== AI Chatbot "小宠" Cute Pet Assistant Styles ===== */
+
+/* ===== 小宠 Floating Ball ===== */
+.chatbot-toggle {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FFB347 0%, #FF8C00 50%, #FF6B35 100%);
+    border: none;
+    cursor: pointer;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 4px 20px rgba(255, 179, 71, 0.5));
+    animation: petFloat 3s ease-in-out infinite;
+    padding: 0;
+    text-decoration: none;
+    box-shadow: 0 4px 25px rgba(255, 179, 71, 0.4), 0 2px 10px rgba(0,0,0,0.1);
+    border: 2px solid rgba(255,255,255,0.2);
+}
+
+@keyframes petFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+.chatbot-toggle:hover {
+    transform: scale(1.12) translateY(-3px);
+    filter: drop-shadow(0 8px 35px rgba(255, 179, 71, 0.9));
+    box-shadow: 0 8px 35px rgba(255, 179, 71, 0.6), 0 4px 15px rgba(0,0,0,0.15);
+    animation: none;
+    border-color: rgba(255,255,255,0.4);
+}
+
+.chatbot-toggle.active {
+    animation: none;
+    transform: scale(0.95);
+    filter: drop-shadow(0 2px 10px rgba(255, 179, 71, 0.3));
+    box-shadow: 0 2px 15px rgba(255, 179, 71, 0.3);
+}
+
+.chatbot-toggle .kitten-avatar {
+    width: 80px;
+    height: 80px;
+    transition: transform 0.3s ease;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.1));
+}
+
+.chatbot-toggle .kitten-avatar svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Pulsing glow effect around kitten */
+.chatbot-toggle::before {
+    content: '';
+    position: absolute;
+    width: 105px;
+    height: 105px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 179, 71, 0.4) 0%, rgba(255, 140, 0, 0.1) 50%, transparent 70%);
+    animation: petGlow 2s ease-in-out infinite;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@keyframes petGlow {
+    0%, 100% { transform: scale(1); opacity: 0.6; }
+    50% { transform: scale(1.2); opacity: 0.4; }
+}
+
+/* Second outer ring for depth */
+.chatbot-toggle::after {
+    content: '';
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 179, 71, 0.2);
+    animation: petRing 2.5s ease-in-out infinite;
+    pointer-events: none;
+    z-index: -2;
+}
+
+@keyframes petRing {
+    0%, 100% { transform: scale(0.85); opacity: 0.5; }
+    50% { transform: scale(1.05); opacity: 0.15; }
+}
+
+.chatbot-toggle .badge {
+    position: absolute;
+    top: -4px;
+    right: -2px;
+    font-size: 11px;
+    padding: 3px 7px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ff4757 0%, #ff3838 100%);
+    box-shadow: 0 2px 8px rgba(255, 71, 87, 0.4);
+    z-index: 10;
+    border: 2px solid white;
+    animation: badgePulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* Status dot - 在线 */
+.chatbot-toggle .status-dot {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    width: 18px;
+    height: 18px;
+    background: #22c55e;
+    border-radius: 50%;
+    border: 3px solid white;
+    z-index: 10;
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+    animation: statusBlink 2s ease-in-out infinite;
+}
+
+@keyframes statusBlink {
+    0%, 100% { box-shadow: 0 0 8px rgba(34, 197, 94, 0.5); }
+    50% { box-shadow: 0 0 18px rgba(34, 197, 94, 0.9); }
+}
+
+/* Label tooltip - 小宠 AI 助手 */
+.chatbot-toggle .pet-label {
+    position: absolute;
+    right: calc(100% + 16px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(8px);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.1);
+    pointer-events: none;
+}
+.chatbot-toggle .pet-label::after {
+    content: '';
+    position: absolute;
+    right: -6px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-left: 6px solid rgba(0,0,0,0.8);
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+}
+.chatbot-toggle:hover .pet-label {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(-50%) translateX(-2px);
+}
+.chatbot-toggle .pet-label small {
+    display: block;
+    font-size: 11px;
+    font-weight: 400;
+    color: #22c55e;
+    margin-top: 2px;
+}
+
+/* Ripple effect on click */
+.chatbot-toggle .ripple-effect {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.35);
+    transform: scale(0);
+    animation: rippleAnim 0.6s ease-out;
+    pointer-events: none;
+    z-index: 20;
+}
+
+@keyframes rippleAnim {
+    to { transform: scale(3); opacity: 0; }
+}
+
+/* Chat Window */
+.chatbot-window {
+    position: fixed;
+    bottom: 120px;
+    right: 30px;
+    width: 380px;
+    height: 550px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 50px rgba(0,0,0,0.2);
+    z-index: 9998;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    animation: slideUp 0.3s ease;
+    border: 2px solid #FFD699;
+}
+.chatbot-window.open {
+    display: flex;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Paw prints decoration */
+.kitten-paw-print {
+    position: fixed;
+    z-index: 9997;
+    font-size: 16px;
+    opacity: 0.3;
+    pointer-events: none;
+    animation: pawFade 3s ease-in-out infinite;
+}
+.paw-1 { bottom: 110px; right: 15px; animation-delay: 0s; transform: rotate(-20deg); }
+.paw-2 { bottom: 100px; right: 8px; animation-delay: 1.5s; transform: rotate(15deg); }
+
+@keyframes pawFade {
+    0%, 100% { opacity: 0.15; }
+    50% { opacity: 0.4; }
+}
+
+.chatbot-header {
+    background: linear-gradient(135deg, #FFB347 0%, #FF8C00 50%, #FF6B35 100%);
+    color: white;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.chatbot-header .title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.chatbot-header .title .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.chatbot-header .title h6 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 15px;
+}
+.chatbot-header .title small {
+    opacity: 0.85;
+    font-size: 11px;
+}
+.chatbot-header .btn-close {
+    filter: brightness(0) invert(1);
+    opacity: 0.8;
+}
+
+.chatbot-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background: #FFF8F0;
+}
+
+.chat-message {
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+}
+.chat-message.user {
+    align-items: flex-end;
+}
+.chat-message.assistant {
+    align-items: flex-start;
+}
+
+.chat-bubble {
+    max-width: 85%;
+    padding: 12px 16px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+.chat-message.user .chat-bubble {
+    background: linear-gradient(135deg, #FFB347 0%, #FF8C00 100%);
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+.chat-message.assistant .chat-bubble {
+    background: white;
+    color: #333;
+    border: 1px solid #FFE0B2;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 2px 5px rgba(255, 179, 71, 0.1);
+}
+
+.chat-message .time {
+    font-size: 11px;
+    color: #999;
+    margin-top: 4px;
+    padding: 0 4px;
+}
+
+.chatbot-input {
+    padding: 12px 15px;
+    border-top: 1px solid #FFE0B2;
+    display: flex;
+    gap: 8px;
+    background: white;
+}
+.chatbot-input input {
+    flex: 1;
+    border: 2px solid #FFE0B2;
+    border-radius: 25px;
+    padding: 10px 16px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+.chatbot-input input:focus {
+    border-color: #FFB347;
+    box-shadow: 0 0 0 3px rgba(255, 179, 71, 0.2);
+}
+.chatbot-input .send-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, #FFB347 0%, #FF8C00 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.chatbot-input .send-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 3px 10px rgba(255, 179, 71, 0.5);
+}
+.chatbot-input .send-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.chatbot-typing {
+    display: flex;
+    gap: 4px;
+    padding: 12px 16px;
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #FFE0B2;
+    border-bottom-left-radius: 4px;
+    margin-bottom: 12px;
+    align-self: flex-start;
+}
+.chatbot-typing span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #FFB347;
+    animation: typing 1.4s infinite ease-in-out;
+}
+.chatbot-typing span:nth-child(2) { animation-delay: 0.2s; }
+.chatbot-typing span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typing {
+    0%, 60%, 100% { opacity: 0.3; transform: scale(0.8); }
+    30% { opacity: 1; transform: scale(1.2); }
+}
+
+.chatbot-actions {
+    padding: 8px 15px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    background: #FFF8F0;
+    border-bottom: 1px solid #FFE0B2;
+}
+.chatbot-actions .quick-btn {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    border: 1px solid #FFB347;
+    background: transparent;
+    color: #E89630;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.chatbot-actions .quick-btn:hover {
+    background: #FFB347;
+    color: white;
+}
+
+.chatbot-footer {
+    padding: 8px 15px;
+    background: #FFF8F0;
+    text-align: center;
+    font-size: 11px;
+    color: #CC9966;
+    border-top: 1px solid #FFE0B2;
+}
+
+@media (max-width: 480px) {
+    .chatbot-toggle {
+        width: 68px;
+        height: 68px;
+        bottom: 20px;
+        right: 20px;
+    }
+    .chatbot-toggle .kitten-avatar {
+        width: 62px;
+        height: 62px;
+    }
+    .chatbot-toggle::before {
+        width: 82px;
+        height: 82px;
+    }
+    .chatbot-toggle::after {
+        width: 96px;
+        height: 96px;
+    }
+    .chatbot-toggle .pet-label {
+        display: none;
+    }
+    .chatbot-toggle .status-dot {
+        width: 14px;
+        height: 14px;
+        border-width: 2px;
+    }
+    .chatbot-window {
+        width: calc(100vw - 20px);
+        height: calc(100vh - 140px);
+        bottom: 80px;
+        right: 10px;
+        border-radius: 16px;
+    }
+    .kitten-paw-print { display: none; }
+}
+
+/* Wishlist heart button */
+.wishlist-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    z-index: 5;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.wishlist-btn:hover { transform: scale(1.1); }
+.wishlist-btn.active i { color: #ff4757; }
+.wishlist-btn i { color: #ccc; font-size: 18px; }
+
+/* Fullscreen link in chatbot footer */
+.chatbot-footer .fullscreen-link {
+    color: #CC9966;
+    text-decoration: none;
+    font-size: 11px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 8px;
+    padding: 2px 8px;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+.chatbot-footer .fullscreen-link:hover {
+    background: rgba(255, 179, 71, 0.15);
+    color: #FFB347;
+}
+/* Link style for chatbot toggle */
+a.chatbot-toggle {
+    text-decoration: none;
+    color: inherit;
+}
+a.chatbot-toggle:hover {
+    color: inherit;
+}

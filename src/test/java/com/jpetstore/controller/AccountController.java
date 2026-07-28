@@ -5,11 +5,12 @@ import com.jpetstore.domain.Profile;
 import com.jpetstore.domain.SignOn;
 import com.jpetstore.mapper.AccountMapper;
 import com.jpetstore.service.AccountService;
+import com.jpetstore.service.RecommendationService;
+import com.jpetstore.common.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -30,6 +31,10 @@ class AccountControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @MockitoBean
+    private JwtUtil jwtUtil;
+    @MockitoBean
+    private RecommendationService recommendationService;
     @MockitoBean
     private AccountService accountService;
 
@@ -67,6 +72,7 @@ class AccountControllerTest {
     @Test
     void testLoginSuccess() throws Exception {
         when(accountService.login("testuser", "password")).thenReturn(testAccount);
+        when(jwtUtil.generateToken("testuser", null)).thenReturn("mock-token");
 
         mockMvc.perform(post("/api/account/login")
                         .param("username", "testuser")
@@ -74,7 +80,7 @@ class AccountControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.message").value("登录成功"))
-                .andExpect(jsonPath("$.data.userid").value("testuser"));
+                .andExpect(jsonPath("$.data.user.userid").value("testuser"));
     }
 
     @Test
@@ -175,7 +181,7 @@ class AccountControllerTest {
                         .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
-                .andExpect(jsonPath("$.message").value("更新成功"));
+                .andExpect(jsonPath("$.data").value("更新成功"));
     }
 
     @Test
@@ -185,7 +191,7 @@ class AccountControllerTest {
         mockMvc.perform(delete("/api/account/testuser"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
-                .andExpect(jsonPath("$.message").value("删除成功"));
+                .andExpect(jsonPath("$.data").value("删除成功"));
     }
 
     @Test
@@ -388,22 +394,24 @@ class AccountControllerTest {
     @Test
     void testLoginSuccessVerifyAllFields() throws Exception {
         when(accountService.login("testuser", "password")).thenReturn(testAccount);
+        when(jwtUtil.generateToken("testuser", null)).thenReturn("mock-token");
 
         mockMvc.perform(post("/api/account/login")
                         .param("username", "testuser")
                         .param("password", "password"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
-                .andExpect(jsonPath("$.data.userid").value("testuser"))
-                .andExpect(jsonPath("$.data.email").value("test@example.com"))
-                .andExpect(jsonPath("$.data.firstname").value("Test"))
-                .andExpect(jsonPath("$.data.lastname").value("User"))
-                .andExpect(jsonPath("$.data.addr1").value("123 Test St"))
-                .andExpect(jsonPath("$.data.city").value("Test City"))
-                .andExpect(jsonPath("$.data.state").value("TS"))
-                .andExpect(jsonPath("$.data.zip").value("12345"))
-                .andExpect(jsonPath("$.data.country").value("USA"))
-                .andExpect(jsonPath("$.data.phone").value("555-1234"))
+                .andExpect(jsonPath("$.data.user.userid").value("testuser"))
+                .andExpect(jsonPath("$.data.user.email").value("test@example.com"))
+                .andExpect(jsonPath("$.data.user.firstname").value("Test"))
+                .andExpect(jsonPath("$.data.user.lastname").value("User"))
+                .andExpect(jsonPath("$.data.user.addr1").value("123 Test St"))
+                .andExpect(jsonPath("$.data.user.city").value("Test City"))
+                .andExpect(jsonPath("$.data.user.state").value("TS"))
+                .andExpect(jsonPath("$.data.user.zip").value("12345"))
+                .andExpect(jsonPath("$.data.user.country").value("USA"))
+                .andExpect(jsonPath("$.data.user.phone").value("555-1234"))
+                .andExpect(jsonPath("$.data.token").value("mock-token"))
                 .andExpect(jsonPath("$.timestamp").exists());
     }
 
